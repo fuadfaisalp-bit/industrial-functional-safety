@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Standard PLC vs Safety PLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7F9; --card:#fff; --ink:#101418; --muted:#7B838E; --line:#E4E8EB;
+  --std:#4B5563; --safety:#FFCC00; --safetyDark:#111; --red:#EF4444; --green:#10B981; --blue:#2563EB;
+}
+*{box-sizing:border-box;margin:0;padding:0} body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.hero{padding:56px 0 28px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#101418;color:#fff;font-size:10px;letter-spacing:.2em;font-weight:800;padding:8px 14px;border-radius:999px;margin-bottom:18px}
+.badge i{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.hero h1{font-size:52px;line-height:.9;letter-spacing:-.03em;font-weight:800} @media(max-width:700px){.hero h1{font-size:34px}}
+.hero .sub{max-width:700px;margin:14px auto 0;font-size:15px;color:#475569;line-height:1.6;font-weight:500}
+.card-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:880px;margin:28px auto 0}
+@media(max-width:760px){.card-pair{grid-template-columns:1fr}}
+.plc-big{background:var(--card);border:1.5px solid var(--line);border-radius:24px;padding:18px;position:relative;overflow:hidden;text-align:left;transition:.25s}
+.plc-big:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(0,0,0,.08)}
+.plc-big.safety{border-color:#101418; background:linear-gradient(180deg,#FFFEF0 0%, #fff 55%)}
+.plc-big .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tag{font-size:10px;letter-spacing:.14em;font-weight:800;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#F8FAFC}
+.safety .tag{background:#101418;color:var(--safety);border-color:#101418}
+.plc-illust{height:132px;background:radial-gradient(400px 120px at 50% 0%, #F8FAFC 0%, #fff 70%);border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;margin-bottom:14px}
+.plc-big h3{font-size:15px;letter-spacing:-.01em} .plc-big p{font-size:12px;color:#64748B;line-height:1.5;margin-top:4px;font-weight:500}
+
+section{padding:62px 0}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.num{width:28px;height:28px;background:#101418;color:#fff;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800}
+.label{font-size:11px;letter-spacing:.2em;font-weight:800;text-transform:uppercase;opacity:.6}
+h2{font-size:31px;letter-spacing:-.02em;line-height:1;font-weight:800;margin-bottom:8px} @media(max-width:700px){h2{font-size:26px}}
+.lead{color:var(--muted);font-size:14px;max-width:660px;line-height:1.5}
+
+/* S2 */
+.compare-wrap{background:var(--card);border:1.5px solid var(--line);border-radius:24px;overflow:hidden;margin-top:24px;display:grid;grid-template-columns:300px 1fr}
+@media(max-width:900px){.compare-wrap{grid-template-columns:1fr}}
+.plc-side{padding:18px;background:#FAFBFC;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
+.mini-plc{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px;transition:.25s;position:relative}
+.mini-plc.active{border-color:#101418;box-shadow:0 8px 20px rgba(0,0,0,.08);transform:scale(1.02)}
+.mini-plc.active.safety{border-color:#EAB308;box-shadow:0 0 0 4px rgba(234,179,8,.15)}
+.mini-plc .mp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.mini-plc b{font-size:11px;letter-spacing:.12em}
+.mini-plc .icon{height:72px;background:#F8FAFC;border-radius:10px;display:grid;place-items:center;border:1px dashed #E2E8F0;margin-bottom:8px}
+.mini-plc .feat{font-size:11px;font-weight:700;letter-spacing:.02em;color:#475569;min-height:32px;display:grid;place-items:center;text-align:center;background:#F8FAFC;border-radius:8px;padding:6px}
+.table{width:100%}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--line);cursor:pointer;transition:.2s}
+.row:last-child{border-bottom:none}
+.row:hover{background:#F8FAFC}
+.row.active{background:#101418;color:#fff}
+.cell{padding:14px 16px;font-size:13px;font-weight:600;line-height:1.4;display:flex;align-items:center;gap:10px}
+.cell:first-child{border-right:1px solid rgba(0,0,0,.06)} .row.active .cell:first-child{border-right-color:rgba(255,255,255,.1)}
+.cell i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;flex-shrink:0;background:#F1F5F9;color:#64748B;font-style:normal;font-weight:800}
+.row.active .cell i{background:#fff;color:#101418}
+
+/* S3 Conveyor Example */
+.s3-grid{display:grid;grid-template-columns:1.15fr .65fr;gap:18px;margin-top:22px} @media(max-width:980px){.s3-grid{grid-template-columns:1fr}}
+.machine{background:var(--card);border:1.5px solid var(--line);border-radius:24px;overflow:hidden}
+.m-head{padding:14px 18px;background:#FAFBFC;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.m-head b{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.status{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800}
+.dot{width:9px;height:9px;border-radius:50%;background:#D1D5DB}.dot.on{background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.18)} .dot.off{background:var(--red);box-shadow:0 0 0 4px rgba(239,68,68,.18)}
+.m-stage{padding:18px;display:flex;flex-direction:column;gap:16px;align-items:center;background:radial-gradient(700px 280px at 50% 0%, #F8FAFC 0%, #fff 65%)}
+.plc-row{display:flex;gap:12px;width:100%;max-width:520px;justify-content:space-between}
+.plc-box{flex:1;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;text-align:center;transition:.3s;position:relative}
+.plc-box.active{transform:scale(1.04);border-color:#101418;box-shadow:0 8px 20px rgba(0,0,0,.1)}
+.plc-box.safety.active{border-color:#EAB308;box-shadow:0 0 0 4px rgba(234,179,8,.18)}
+.plc-box b{font-size:9px;letter-spacing:.14em;display:block;margin-bottom:6px}
+.plc-box .led{width:28px;height:10px;border-radius:999px;margin:0 auto 4px;background:#E2E8F0;position:relative}
+.plc-box .led:after{content:'';position:absolute;left:2px;top:2px;width:6px;height:6px;background:#fff;border-radius:50%;transition:.3s}
+.plc-box.active .led{background:var(--green)} .plc-box.active .led:after{transform:translateX(16px)}
+.plc-box.safety.active .led{background:var(--red)}
+.conveyor{width:100%;max-width:520px;height:88px;background:#101418;border-radius:14px;padding:10px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 12px 24px rgba(0,0,0,.18);border:2px solid #000}
+.belt{height:36px;background:repeating-linear-gradient(90deg,#2A2E33 0 18px,#3A4048 18px 36px);border-radius:6px;position:relative;overflow:hidden}
+.belt.moving{animation:belt 0.4s linear infinite} @keyframes belt{from{background-position:0 0} to{background-position:36px 0}}
+.box{position:absolute;left:42%;top:50%;transform:translate(-50%,-50%);width:34px;height:24px;background:#fff;border:2px solid #111;border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:800}
+.box.moving{animation:bob .6s ease-in-out infinite alternate} @keyframes bob{from{transform:translate(-50%,-50%)} to{transform:translate(-40%,-52%)}}
+.motor{position:absolute;right:-10px;top:50%;transform:translateY(-50%);width:42px;height:42px;background:#fff;border:3px solid #111;border-radius:50%;display:grid;place-items:center}
+.motor .fan{width:26px;height:26px;border:2px dashed #111;border-radius:50%} .motor .fan.spin{animation:spin .5s linear infinite;border-style:solid} @keyframes spin{to{transform:rotate(360deg)}}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{border:1.5px solid var(--line);background:#fff;padding:11px 16px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.1em;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.btn:hover{border-color:#101418;transform:translateY(-1px)}
+.btn.std.active{background:#4B5563;color:#fff;border-color:#4B5563}
+.btn.estop{background:#FFF0F0;border-color:#FECACA;color:#991B1B}
+.btn.estop.active{background:var(--red);color:#fff;border-color:var(--red)}
+.seq{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:18px}
+.seq h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:14px}
+.seq-list{display:flex;flex-direction:column;gap:0}
+.seq-item{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;opacity:.35;transition:.3s;border:1px solid transparent}
+.seq-item.active{opacity:1;background:#F8FAFC;border-color:#E2E8F0}
+.seq-item.done{opacity:.7}.seq-item .si{width:22px;height:22px;border-radius:50%;background:#E2E8F0;display:grid;place-items:center;font-size:11px;font-weight:800;flex-shrink:0}.seq-item.active .si{background:#101418;color:#fff}.seq-item.done .si{background:var(--green);color:#fff}
+.note{margin-top:12px;background:#F1F5F9;border-radius:12px;padding:10px 12px;font-size:11px;line-height:1.5;font-weight:600;color:#475569}
+
+/* S4 */
+.fault-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px} @media(max-width:860px){.fault-grid{grid-template-columns:1fr}}
+.fault-card{background:var(--card);border:1.5px solid var(--line);border-radius:22px;overflow:hidden}
+.f-head{padding:14px 16px;background:#FAFBFC;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.f-head b{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.f-stage{height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;background:radial-gradient(400px 160px at 50% 0%, #F8FAFC 0%, #fff 70%);position:relative}
+.wire{width:3px;height:28px;background:#101418;position:relative}.wire.cut{background:#E2E8F0}
+.plc-f{width:120px;height:72px;border:2.5px solid #101418;border-radius:12px;background:#fff;display:grid;place-items:center;position:relative;transition:.3s}
+.plc-f.safety{background:#FFFEF0;border-color:#101418}
+.fault-badge{position:absolute;top:-12px;right:-12px;width:32px;height:32px;background:var(--red);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:16px;box-shadow:0 4px 12px rgba(239,68,68,.4);opacity:0;transform:scale(.5);transition:.35s cubic-bezier(.7,0,.3,1)}
+.fault-badge.show{opacity:1;transform:scale(1)}
+.motor-f{width:56px;height:56px;background:#fff;border:3px solid #101418;border-radius:50%;display:grid;place-items:center;position:relative}
+.motor-f.off{opacity:.35;filter:grayscale(1)}
+.msg{font-size:11px;font-weight:700;letter-spacing:.02em;padding:8px 12px;border-radius:999px;max-width:90%;text-align:center;line-height:1.4}
+.msg.bad{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.msg.good{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.btn-fault{background:#101418;color:#fff;border:none;padding:9px 14px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.1em;cursor:pointer;transition:.2s}
+.btn-fault:active{transform:scale(.96)}
+
+.flow{max-width:420px;margin:28px auto 0;display:flex;flex-direction:column;align-items:center;gap:0}
+.flow-step{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 18px;width:100%;opacity:0;transform:translateY(12px);transition:.6s}
+.flow-step.show{opacity:1;transform:none}
+.flow-step .fi{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#F1F5F9;border:1px solid #E2E8F0;font-size:16px;flex-shrink:0}
+.flow-arrow{height:26px;display:flex;align-items:center;opacity:0;transition:.4s}.flow-arrow.show{opacity:.4}.flow-arrow span{width:2px;height:14px;background:#101418;display:block;position:relative}.flow-arrow span:after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #101418}
+
+.interview{background:#101418;color:#E5E7EB;border-radius:24px;padding:22px;display:grid;grid-template-columns:1fr auto;gap:18px;margin-top:34px} @media(max-width:800px){.interview{grid-template-columns:1fr}}
+.interview h4{font-size:10px;letter-spacing:.2em;opacity:.5;margin-bottom:10px}.interview p{font-size:14px;line-height:1.6;font-weight:500}
+.copy{background:#fff;color:#101418;border:none;padding:11px 16px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.1em;cursor:pointer;transition:.2s}.copy.copied{background:var(--green);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- S1 -->
+  <div class="hero">
+    <div class="badge"><i></i> AUTOMATION vs FUNCTIONAL SAFETY</div>
+    <h1>Standard PLC vs Safety PLC</h1>
+    <p class="sub">Although both controllers look similar and can control industrial machines, they are designed for different purposes. A <b>Standard PLC automates the process</b>, while a <b>Safety PLC protects people, equipment, and the environment</b>.</p>
+    <div class="card-pair">
+      <div class="plc-big">
+        <div class="top"><span class="tag">STD • AUTOMATION</span><span class="mono" style="font-size:10px;opacity:.5">IEC 61131</span></div>
+        <div class="plc-illust">
+          <svg width="140" height="80" viewBox="0 0 140 80"><rect x="10" y="10" width="100" height="54" rx="8" fill="#fff" stroke="#4B5563" stroke-width="2"/><rect x="18" y="18" width="16" height="10" rx="2" fill="#4B5563"/><rect x="38" y="18" width="16" height="10" rx="2" fill="#9CA3AF"/><rect x="58" y="18" width="16" height="10" rx="2" fill="#E5E7EB"/><circle cx="26" cy="48" r="5" fill="#10B981"/><circle cx="44" cy="48" r="5" fill="#E5E7EB"/><text x="70" y="52" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#4B5563">CPU RUN</text></svg>
+        </div>
+        <h3>Standard PLC</h3><p>Controls the machine, executes normal logic for production, speed, sequence.</p>
+      </div>
+      <div class="plc-big safety">
+        <div class="top"><span class="tag">SAFETY • IEC 61508</span><span class="mono" style="font-size:10px;opacity:.6">SIL 2/3 • PLe</span></div>
+        <div class="plc-illust" style="background:radial-gradient(400px 120px at 50% 0%, #FFFBEB 0%, #fff 80%)">
+          <svg width="140" height="80" viewBox="0 0 140 80"><rect x="10" y="8" width="100" height="56" rx="10" fill="#FFFEF0" stroke="#111" stroke-width="2.2"/><rect x="18" y="16" width="16" height="12" rx="3" fill="#111"/><rect x="38" y="16" width="16" height="12" rx="3" fill="#FACC15"/><rect x="58" y="16" width="16" height="12" rx="3" fill="#111"/><circle cx="26" cy="48" r="5" fill="#10B981"/><circle cx="44" cy="48" r="5" fill="#FACC15"/><circle cx="62" cy="48" r="5" fill="#111"/><text x="78" y="52" font-family="JetBrains Mono" font-size="8" font-weight="700" fill="#111">SAFE</text></svg>
+        </div>
+        <h3>Safety PLC</h3><p>Protects people & equipment, executes certified safety functions with diagnostics & redundancy.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <section id="s2">
+    <div class="head"><div class="num">2</div><div class="label">Side-by-side comparison</div></div>
+    <h2>Same look, different responsibility.</h2>
+    <p class="lead">Click each row — watch the PLCs highlight what changes.</p>
+    <div class="compare-wrap">
+      <div class="plc-side">
+        <div class="mini-plc" id="miniStd">
+          <div class="mp-head"><b>STANDARD PLC</b><span class="mono" style="font-size:9px;opacity:.5">AUTOMATION</span></div>
+          <div class="icon" id="iconStd">Controls machine</div>
+          <div class="feat" id="featStd">Controls the machine</div>
+        </div>
+        <div class="mini-plc safety" id="miniSafe">
+          <div class="mp-head"><b>SAFETY PLC</b><span class="mono" style="font-size:9px;opacity:.5">SAFETY</span></div>
+          <div class="icon" id="iconSafe">Protects people</div>
+          <div class="feat" id="featSafe">Protects people and equipment</div>
+        </div>
+      </div>
+      <div class="table" id="table">
+        <div class="row active" data-i="0"><div class="cell"><i>1</i> Controls the machine</div><div class="cell"><i>1</i> Protects people and equipment</div></div>
+        <div class="row" data-i="1"><div class="cell"><i>2</i> Used for automation</div><div class="cell"><i>2</i> Used for safety functions</div></div>
+        <div class="row" data-i="2"><div class="cell"><i>3</i> Executes normal control logic</div><div class="cell"><i>3</i> Executes certified safety logic</div></div>
+        <div class="row" data-i="3"><div class="cell"><i>4</i> Used for normal machine operation</div><div class="cell"><i>4</i> Used with E-Stops, safety gates, light curtains</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 -->
+  <section id="s3">
+    <div class="head"><div class="num">3</div><div class="label">Interactive Example — Conveyor</div></div>
+    <h2>Both can stop a machine, but for different reasons.</h2>
+    <div class="s3-grid">
+      <div class="machine">
+        <div class="m-head"><b>Conveyor • SIF-ES01 + STD-C01</b><div class="status"><span class="dot on" id="mDot"></span><span id="mTxt">RUNNING</span></div></div>
+        <div class="m-stage">
+          <div class="plc-row">
+            <div class="plc-box" id="plcStd"><b>STANDARD PLC</b><div class="led" id="ledStd"></div><small class="mono" style="font-size:9px">STD LOGIC</small></div>
+            <div class="plc-box safety" id="plcSafe"><b>SAFETY PLC</b><div class="led" id="ledSafe"></div><small class="mono" style="font-size:9px">SAFETY LOGIC</small></div>
+          </div>
+          <div class="conveyor">
+            <div class="belt moving" id="belt3"></div>
+            <div class="box moving" id="box3">📦</div>
+            <div class="motor"><div class="fan spin" id="fan3"></div></div>
+          </div>
+          <div class="controls">
+            <button class="btn std" id="btnNormal"><span>■</span> NORMAL STOP</button>
+            <button class="btn estop" id="btnEStop"><span>◉</span> EMERGENCY STOP</button>
+            <button class="btn" id="btnReset" style="display:none">↻ RESET</button>
+          </div>
+        </div>
+      </div>
+      <div class="seq">
+        <h4 id="seqTitle">SELECT A STOP MODE</h4>
+        <div class="seq-list" id="seqList">
+          <div class="seq-item"><div class="si">-</div><b>Press Normal Stop or Emergency Stop</b></div>
+        </div>
+        <div class="note" id="seqNote">💡 Observe which PLC reacts — responsibility is different even if the result (motor stops) looks similar.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 -->
+  <section id="s4">
+    <div class="head"><div class="num">4</div><div class="label">Why use a Safety PLC?</div></div>
+    <h2>What happens if the PLC itself fails?</h2>
+    <div class="fault-grid">
+      <div class="fault-card">
+        <div class="f-head"><b>Illustration 1 — Standard PLC</b><span class="mono" style="font-size:9px;opacity:.5">NON-CERTIFIED</span></div>
+        <div class="f-stage">
+          <div class="plc-f" id="plcFStd">STD PLC <div class="fault-badge" id="badgeStd">⚠</div></div>
+          <div class="wire" id="wireStd"></div>
+          <div class="motor-f" id="motorStd">M</div>
+          <div class="msg bad" id="msgStd">If a Standard PLC develops an internal fault, it is not designed or certified to guarantee correct operation of safety functions.</div>
+          <button class="btn-fault" id="faultStdBtn">⚡ SIMULATE INTERNAL FAULT</button>
+        </div>
+      </div>
+      <div class="fault-card" style="border-color:#101418">
+        <div class="f-head" style="background:#FFFEF0"><b>Illustration 2 — Safety PLC</b><span class="mono" style="font-size:9px;color:#CA8A04">SIL CERTIFIED</span></div>
+        <div class="f-stage">
+          <div class="plc-f safety" id="plcFSafe">SAFETY PLC <div class="fault-badge" id="badgeSafe">⚠</div></div>
+          <div class="wire" id="wireSafe"></div>
+          <div class="motor-f" id="motorSafe">M</div>
+          <div class="msg good" id="msgSafe" style="display:none">Safety Function Maintained — System Safely Shut Down</div>
+          <div class="msg bad" id="msgSafe2" style="display:block">Click to simulate same internal fault — watch safe reaction.</div>
+          <button class="btn-fault" id="faultSafeBtn" style="background:#EAB308;color:#111">⚡ SIMULATE INTERNAL FAULT</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:48px">
+      <h2>Key Takeaway</h2>
+      <div class="flow" id="flowTake">
+        <div class="flow-step"><div class="fi">⚙️</div><div><b>Standard PLC</b><small>Controls the process</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step"><div class="fi">🛡️</div><div><b>Safety PLC</b><small>Protects the process</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step" style="border-color:#EAB308;background:#FFFEF0"><div class="fi" style="background:#FEF08A">⚠</div><div><b>If a Safety Function is Required</b><small>Use a Safety PLC</small></div></div>
+      </div>
+      <p class="lead" style="margin:14px auto 0;text-align:center">A Safety PLC is designed and certified so that if certain internal faults occur, the safety function continues to operate correctly or the system automatically fails in a safe state.</p>
+    </div>
+
+    <div class="interview">
+      <div><h4>INTERVIEW ANSWER</h4><p id="ansTxt"><b>A Standard PLC is designed to automate and control industrial processes, while a Safety PLC is specifically designed to perform certified safety functions. A Safety PLC is built so that even if certain internal faults occur, it can continue to perform the safety function correctly or move the system into a safe state. This makes it suitable for applications such as Emergency Stops, safety gates, and light curtains where protecting people and equipment is critical.</b></p></div>
+      <button class="copy" id="copyBtn">⧉ COPY ANSWER</button>
+    </div>
+  </section>
+
+  <div style="height:50px"></div>
+</div>
+
+<script>
+// S2 comparison interaction
+const rows = document.querySelectorAll('.row');
+const featStd = document.getElementById('featStd');
+const featSafe = document.getElementById('featSafe');
+const iconStd = document.getElementById('iconStd');
+const iconSafe = document.getElementById('iconSafe');
+const miniStd = document.getElementById('miniStd');
+const miniSafe = document.getElementById('miniSafe');
+const data = [
+  {std:"Controls the machine", safe:"Protects people and equipment", is:"⚙️ Controls", ia:"🛡️ Protects"},
+  {std:"Used for automation", safe:"Used for safety functions", is:"🏭 Automation", ia:"🚨 Safety"},
+  {std:"Executes normal control logic", safe:"Executes certified safety logic", is:"📄 Normal logic", ia:"✅ Certified safety logic"},
+  {std:"Used for normal machine operation", safe:"Used with E-Stops, safety gates, light curtains", is:"▶️ Normal operation", ia:"⛔ E-Stop • Gate • Light curtain"}
+];
+rows.forEach(r=>{
+  r.addEventListener('click', ()=>{
+    rows.forEach(x=>x.classList.remove('active')); r.classList.add('active');
+    const i = parseInt(r.dataset.i);
+    featStd.textContent = data[i].std; featSafe.textContent = data[i].safe;
+    iconStd.textContent = data[i].is; iconSafe.textContent = data[i].ia;
+    miniStd.classList.add('active'); miniSafe.classList.add('active');
+    setTimeout(()=>{miniStd.classList.remove('active'); miniSafe.classList.remove('active')}, 700);
+  });
+});
+
+// S3 conveyor logic
+const belt3=document.getElementById('belt3'), box3=document.getElementById('box3'), fan3=document.getElementById('fan3');
+const mDot=document.getElementById('mDot'), mTxt=document.getElementById('mTxt');
+const plcStdBox=document.getElementById('plcStd'), plcSafeBox=document.getElementById('plcSafe');
+const seqList=document.getElementById('seqList'), seqTitle=document.getElementById('seqTitle'), seqNote=document.getElementById('seqNote');
+const btnNormal=document.getElementById('btnNormal'), btnEStop=document.getElementById('btnEStop'), btnReset=document.getElementById('btnReset');
+let state='run';
+function setSeq(items){
+  seqList.innerHTML='';
+  items.forEach((t,i)=>{
+    const div=document.createElement('div'); div.className='seq-item'+(i===0?' active':'');
+    div.innerHTML=`<div class="si">${i+1}</div><b>${t}</b>`;
+    seqList.appendChild(div);
+  });
+  animateSeq();
+}
+function animateSeq(){
+  const els=seqList.querySelectorAll('.seq-item');
+  let idx=0;
+  const int=setInterval(()=>{
+    if(idx>0){ els[idx-1].classList.remove('active'); els[idx-1].classList.add('done'); }
+    if(idx<els.length){ els[idx].classList.add('active'); idx++; } else clearInterval(int);
+  },650);
+}
+function stopMotion(){
+  belt3.classList.remove('moving'); box3.classList.remove('moving'); fan3.classList.remove('spin'); mDot.className='dot off';
+}
+function startMotion(){
+  belt3.classList.add('moving'); box3.classList.add('moving'); fan3.classList.add('spin'); mDot.className='dot on'; mDot.classList.add('on');
+  mTxt.textContent='RUNNING'; plcStdBox.classList.remove('active'); plcSafeBox.classList.remove('active');
+}
+btnNormal.addEventListener('click',()=>{
+  if(state!=='run') return;
+  state='normalStop';
+  seqTitle.textContent='SCENARIO 1 — NORMAL STOP';
+  seqNote.textContent='This is a normal machine operation handled by the Standard PLC.';
+  setSeq(['Operator Presses Stop','Standard PLC Executes Logic','Motor Stops','Machine Stops']);
+  plcStdBox.classList.add('active'); plcSafeBox.classList.remove('active');
+  setTimeout(()=>{ stopMotion(); mTxt.textContent='STOPPED (Normal)'; }, 1400);
+  btnNormal.classList.add('active'); btnEStop.disabled=true; btnReset.style.display='flex';
+});
+btnEStop.addEventListener('click',()=>{
+  if(state!=='run') return;
+  state='eStop';
+  seqTitle.textContent='SCENARIO 2 — EMERGENCY STOP';
+  seqNote.textContent='Emergency Stops are handled by the Safety PLC because they are part of the machine safety system.';
+  setSeq(['Emergency Stop Activated','Safety PLC Executes Safety Function','Power Removed from Motor','Machine Reaches Safe State']);
+  plcSafeBox.classList.add('active'); plcStdBox.classList.remove('active');
+  setTimeout(()=>{ stopMotion(); mTxt.textContent='SAFE STATE • POWER REMOVED'; plcSafeBox.style.borderColor='#EF4444'; }, 800);
+  btnEStop.classList.add('active'); btnNormal.disabled=true; btnReset.style.display='flex';
+});
+btnReset.addEventListener('click',()=>{
+  state='run'; startMotion();
+  seqList.innerHTML='<div class="seq-item"><div class="si">-</div><b>Press Normal Stop or Emergency Stop</b></div>';
+  seqTitle.textContent='SELECT A STOP MODE'; seqNote.textContent='💡 Observe which PLC reacts — responsibility is different even if the result (motor stops) looks similar.';
+  btnNormal.classList.remove('active'); btnEStop.classList.remove('active'); btnNormal.disabled=false; btnEStop.disabled=false; btnReset.style.display='none';
+  plcSafeBox.style.borderColor='';
+});
+
+// S4 fault simulation
+const badgeStd=document.getElementById('badgeStd'), badgeSafe=document.getElementById('badgeSafe');
+const wireStd=document.getElementById('wireStd'), wireSafe=document.getElementById('wireSafe');
+const motorStd=document.getElementById('motorStd'), motorSafe=document.getElementById('motorSafe');
+const msgSafe=document.getElementById('msgSafe'), msgSafe2=document.getElementById('msgSafe2');
+
+document.getElementById('faultStdBtn').addEventListener('click',()=>{
+  badgeStd.classList.add('show'); wireStd.classList.add('cut');
+  motorStd.classList.toggle('off'); // flicker uncertainty
+  setTimeout(()=>motorStd.classList.remove('off'), 800);
+});
+document.getElementById('faultSafeBtn').addEventListener('click',()=>{
+  badgeSafe.classList.add('show');
+  wireSafe.classList.add('cut');
+  motorSafe.classList.add('off');
+  msgSafe.style.display='block'; msgSafe2.style.display='none';
+  setTimeout(()=>{}, 300);
+});
+
+// flow takeaway observer
+const flow=document.getElementById('flowTake');
+const fSteps=flow.querySelectorAll('.flow-step'); const fArrows=flow.querySelectorAll('.flow-arrow');
+const obs=new IntersectionObserver((e)=>{ if(e[0].isIntersecting){ fSteps.forEach((s,i)=>setTimeout(()=>{s.classList.add('show'); if(fArrows[i]) fArrows[i].classList.add('show')}, i*400)); obs.disconnect(); }},{threshold:.3});
+obs.observe(flow);
+
+// copy
+document.getElementById('copyBtn').addEventListener('click', async()=>{
+  const t=document.getElementById('ansTxt').innerText;
+  try{ await navigator.clipboard.writeText(t); const b=document.getElementById('copyBtn'); b.textContent='✓ COPIED'; b.classList.add('copied'); setTimeout(()=>{b.textContent='⧉ COPY ANSWER'; b.classList.remove('copied')},1600);}catch{ alert(t); }
+});
+</script>
+</body>
+</html>

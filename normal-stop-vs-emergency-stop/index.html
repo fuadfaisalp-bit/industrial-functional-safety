@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STOP Systems - Normal vs Emergency</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F2F4;
+  --card:#FFFFFF;
+  --ink:#111418;
+  --muted:#7A8088;
+  --line:#E2E4E7;
+  --black:#121416;
+  --red:#E30613;
+  --yellow:#FFD400;
+  --green:#00C853;
+  --blue:#2A7FFF;
+  --dark-panel:#16191D;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.mono{font-family:'JetBrains Mono',monospace}
+.hero{
+  background:var(--black);
+  color:#fff;
+  padding:22px 28px;
+  position:sticky; top:0; z-index:50;
+  display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid #2A2E33;
+}
+.hero h1{font-size:13px; letter-spacing:.18em; font-weight:800}
+.hero span{font-size:11px; opacity:.6; letter-spacing:.1em}
+section{max-width:1280px; margin:0 auto; padding:72px 24px}
+.section-label{display:flex; align-items:center; gap:12px; margin-bottom:28px}
+.label-num{width:28px;height:28px; background:var(--black); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:800; border-radius:50%}
+.label-text{font-size:12px; letter-spacing:.2em; font-weight:800; text-transform:uppercase}
+h2{font-size:40px; line-height:.95; letter-spacing:-.03em; font-weight:800; margin-bottom:12px}
+@media(max-width:800px){h2{font-size:30px}}
+
+/* SECTION 1 */
+.compare-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:32px}
+@media(max-width:860px){.compare-grid{grid-template-columns:1fr}}
+.card{background:var(--card); border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.card-head{padding:22px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center}
+.card-head strong{font-size:13px; letter-spacing:.08em; text-transform:uppercase}
+.pill{font-size:10px; font-weight:700; letter-spacing:.12em; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:#F7F8F9}
+.pill.red{background:#FFF0F0; color:var(--red); border-color:#FFCDD1}
+.pill.grey{background:#F0F1F2; color:#5A6068}
+.button-stage{height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; background:radial-gradient(600px 300px at 50% 0%, #F7F8FA 0%, #FFFFFF 60%)}
+.button-stage.dark{background:radial-gradient(600px 300px at 50% 0%, #22252B 0%, #16191D 60%)}
+/* Normal Button */
+.btn-normal{
+  width:124px; height:124px; border-radius:50%;
+  background:radial-gradient(120% 120% at 30% 25%, #B8BCC2 0%, #8A9098 30%, #5A6068 70%, #2C2F33 100%);
+  border:4px solid #2E3236;
+  box-shadow:0 20px 30px rgba(0,0,0,.18), inset 0 2px 2px rgba(255,255,255,.6), inset 0 -6px 12px rgba(0,0,0,.4);
+  cursor:pointer; position:relative; transition:transform .12s cubic-bezier(.3, .7, .4, 1), box-shadow .12s;
+  user-select:none; -webkit-user-select:none;
+}
+.btn-normal:before{
+  content:''; position:absolute; inset:14px; border-radius:50%; border:1px solid rgba(255,255,255,.25)
+}
+.btn-normal:active, .btn-normal.pressed{transform:translateY(10px) scale(.97); box-shadow:0 4px 10px rgba(0,0,0,.2), inset 0 8px 16px rgba(0,0,0,.5)}
+.btn-normal:after{content:'STOP'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:13px; font-weight:800; letter-spacing:.12em; color:#101214; text-shadow:0 1px 0 rgba(255,255,255,.4)}
+
+/* E-Stop */
+.estop-wrapper{position:relative; width:200px; height:200px; display:grid; place-items:center; cursor:pointer}
+.estop-base{width:176px; height:176px; background:var(--yellow); border-radius:18px; border:3px solid #111; display:grid; place-items:center; box-shadow:0 16px 24px rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.6); position:relative}
+.estop-base:after{content:'EMERGENCY STOP'; position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:8px; font-weight:800; letter-spacing:.18em; white-space:nowrap; opacity:.6}
+.estop-stem{width:66px; height:36px; background:#D9D9D9; border:3px solid #111; border-bottom:none; position:relative; z-index:1; margin-bottom:-4px; background:linear-gradient(90deg,#A9A9A9,#EAEAEA,#A9A9A9)}
+.estop-head{
+  width:132px; height:78px; background:radial-gradient(100% 120% at 30% 20%, #FF4D5A 0%, var(--red) 45%, #8C0008 100%);
+  border-radius:38% 38% 32% 32% / 55% 55% 45% 45%;
+  border:3.5px solid #111; position:relative; z-index:2;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.5), 0 8px 16px rgba(0,0,0,.25);
+  transition:transform .18s cubic-bezier(.7,0,.3,1);
+}
+.estop-wrapper.latched .estop-head{transform:translateY(26px)}
+.estop-head:before{content:''; position:absolute; top:8px; left:18%; width:36%; height:16px; background:rgba(255,255,255,.55); border-radius:50%; filter:blur(.2px)}
+
+.card-footer{padding:18px 20px; background:#FAFBFC; border-top:1px solid var(--line); display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+.mini-stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px}
+.mini-stat b{font-size:10px; letter-spacing:.12em; text-transform:uppercase; opacity:.5; display:block; margin-bottom:6px}
+.mini-stat .val{font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace}
+.dot{width:8px; height:8px; border-radius:50%; background:#D0D3D7; box-shadow:0 0 0 3px rgba(0,0,0,.04); transition:.2s}
+.dot.on{background:var(--green); box-shadow:0 0 0 3px rgba(0,200,83,.18), 0 0 12px var(--green)}
+.dot.off{background:#FF3D33; box-shadow:0 0 0 3px rgba(255,61,51,.18), 0 0 12px #FF3D33}
+.dot.cut{background:var(--red); animation:pulseRed .6s infinite alternate}
+@keyframes pulseRed{from{opacity:.6} to{opacity:1; box-shadow:0 0 18px var(--red)}}
+.rung-mini{height:8px; background:var(--line); border-radius:999px; position:relative; overflow:hidden}
+.rung-mini .pow{position:absolute; left:0; top:0; bottom:0; width:100%; background:linear-gradient(90deg,#00E676,#2A7FFF); transition:width .25s}
+.rung-mini .pow.off{width:0%}
+
+.motor-vis{width:36px; height:36px; border-radius:50%; border:2px dashed #C2C6CB; position:relative}
+.motor-vis.spin{border-style:solid; border-color:var(--ink); animation:spin 1s linear infinite}
+.motor-vis.spin:after{content:''; position:absolute; top:50%; left:50%; width:20px; height:3px; background:var(--ink); transform:translate(-50%,-50%)}
+.motor-vis:after{content:''; position:absolute; top:50%; left:50%; width:20px; height:3px; background:#C2C6CB; transform:translate(-50%,-50%) rotate(0)}
+.motor-vis.stopped{opacity:.4}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SECTION 2 */
+.iecs{background:var(--black); color:#fff; border-radius:32px; padding:36px 28px; margin-top:16px}
+.iec-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:28px}
+@media(max-width:760px){.iec-grid{grid-template-columns:1fr 1fr}}
+.iec-item{background:#1D2025; border:1px solid #2A2E34; border-radius:20px; padding:22px 18px 18px; position:relative; cursor:pointer; transition:.2s transform}
+.iec-item:hover{transform:translateY(-3px); background:#23272E; border-color:#3A404A}
+.iec-item .big-btn{width:84px; height:84px; border-radius:50%; margin:0 auto 18px; display:grid; place-items:center; font-weight:800; font-size:11px; letter-spacing:.12em; border:3px solid #111; box-shadow:0 10px 20px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.25)}
+.iec-item .meta{display:flex; justify-content:space-between; align-items:center}
+.iec-item .meta span{font-size:10px; letter-spacing:.14em; opacity:.5; text-transform:uppercase; font-weight:700}
+.iec-item .tooltip{position:absolute; left:50%; top:-12px; transform:translateX(-50%) translateY(-6px); background:#fff; color:#111; font-size:11px; font-weight:800; letter-spacing:.08em; padding:8px 14px; border-radius:999px; white-space:nowrap; opacity:0; pointer-events:none; transition:.22s; box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.iec-item:hover .tooltip{opacity:1; transform:translateX(-50%) translateY(0)}
+.iec-item.is-red .big-btn{width:112px; height:auto; padding:0; background:transparent; border:none; box-shadow:none; border-radius:0}
+.iec-item.is-red .estop-base{width:112px; height:112px}
+.iec-item.is-red .estop-base{transform:scale(.75)}
+.iec-item.is-red .estop-head{width:88px; height:54px}
+
+/* SECTION 3 */
+.split{display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--line); border-radius:24px; overflow:hidden; margin-top:28px; background:#fff}
+@media(max-width:860px){.split{grid-template-columns:1fr}}
+.split-col{padding:28px 22px 22px; position:relative}
+.split-col + .split-col{border-left:1px solid var(--line)}
+@media(max-width:860px){.split-col + .split-col{border-left:none; border-top:1px solid var(--line)}}
+.split-col h3{font-size:12px; letter-spacing:.16em; text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:8px}
+.split-col h3 i{width:28px; height:2px; background:var(--ink); display:block}
+.proto-stage{height:260px; display:grid; place-items:center; background:#F8F9FA; border-radius:16px; border:1px dashed #DDE1E5; position:relative; overflow:hidden}
+.steps{display:flex; flex-direction:column; gap:10px; margin-top:18px}
+.step-row{display:flex; align-items:center; gap:12px; font-size:12px; font-weight:600; letter-spacing:.02em; opacity:.35; transition:.25s}
+.step-row.active{opacity:1}
+.step-num{width:22px; height:22px; border-radius:50%; background:#111; color:#fff; display:grid; place-items:center; font-size:10px; font-weight:800}
+.step-row.active .step-num{background:var(--blue)}
+.step-row.done{opacity:.9}
+.step-row.done .step-num{background:var(--green)}
+.arrow{transform:rotate(90deg); opacity:.2; margin-left:5px}
+
+/* twisted button */
+.twist-btn{
+  position:absolute; bottom:12px; right:12px;
+  background:#111; color:#fff; font-size:10px; font-weight:800; letter-spacing:.12em;
+  padding:10px 14px; border-radius:999px; border:none; cursor:pointer; display:none;
+  animation:pop .25s ease;
+}
+.twist-btn.show{display:block}
+@keyframes pop{from{transform:scale(.8)} to{transform:scale(1)}}
+
+/* SECTION 4 */
+.double-wrap{margin-top:28px; background:#fff; border:1px solid var(--line); border-radius:24px; overflow:hidden}
+.double-top{display:flex; justify-content:space-between; align-items:center; padding:18px 22px; border-bottom:1px solid var(--line); background:#FAFBFC; gap:12px; flex-wrap:wrap}
+.double-top b{font-size:12px; letter-spacing:.14em; text-transform:uppercase}
+.sync-btn{background:var(--black); color:#fff; border:none; padding:12px 20px; border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.12em; cursor:pointer; transition:.15s; display:flex; align-items:center; gap:10px}
+.sync-btn:active{transform:scale(.97)}
+.sync-btn.pushed{background:var(--red)}
+.double-grid{display:grid; grid-template-columns:1fr 1fr}
+@media(max-width:900px){.double-grid{grid-template-columns:1fr}}
+.panel{padding:26px 20px 22px; position:relative; min-height:420px}
+.panel.left{background:var(--dark-panel); color:#E8EBEF}
+.panel.right{background:#FFFFFF}
+.panel h4{font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.7; margin-bottom:18px; display:flex; align-items:center; gap:8px}
+.rail{display:flex; flex-direction:column; align-items:center; gap:0; position:relative; width:220px; margin:0 auto}
+.wire{width:3px; height:42px; background:#2E343C; position:relative; overflow:hidden}
+.wire.flow:after{content:''; position:absolute; left:0; top:0; width:100%; height:100%; background:linear-gradient(180deg, transparent 0%, #00E676 50%, transparent 100%); animation:flowDown 1s linear infinite}
+@keyframes flowDown{from{transform:translateY(-100%)} to{transform:translateY(100%)}}
+.wire.off{background:#2E343C; opacity:.25}
+.wire.off:after{display:none}
+.voltage-tag{background:#1F242B; border:1px solid #2D343E; padding:8px 14px; border-radius:8px; font-family:'JetBrains Mono'; font-size:13px; font-weight:700; color:#7CFF9A}
+.voltage-tag.false{color:#FF7A7A}
+.nc-block{width:160px; background:#23272E; border:1.5px solid #333A44; border-radius:12px; padding:10px; position:relative}
+.nc-label{font-size:9px; letter-spacing:.14em; opacity:.6; text-transform:uppercase; margin-bottom:8px; text-align:center}
+.nc-contacts{display:flex; justify-content:space-between; align-items:center; height:36px; position:relative}
+.nc-contacts:before{content:''; position:absolute; left:18px; right:18px; top:50%; height:2px; background:#3A424E}
+.nc-terminal{width:38px; height:18px; background:#0E1114; border:1px solid #3A424E; border-radius:3px; z-index:1}
+.nc-bridge{position:absolute; left:50%; top:4px; width:64px; height:10px; background:#C7CDD5; border:2px solid #111; transform:translateX(-50%) rotate(0deg); transform-origin:center; transition:transform .28s cubic-bezier(.7,0,.3,1), background .2s; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.nc-block.open .nc-bridge{transform:translateX(-50%) rotate(-28deg) translateY(-8px); background:#9AA3AE}
+.nc-block.open .nc-contacts:before{opacity:.2}
+.plc-box{width:160px; background:#E8F0FF; border:2px solid #2A7FFF; border-radius:12px; padding:10px 12px; text-align:center; color:#0B1E3B}
+.plc-box .io{font-size:10px; letter-spacing:.12em; font-weight:800; opacity:.6}
+.plc-box .state{font-size:18px; font-weight:800; margin-top:4px; font-family:'JetBrains Mono'}
+
+/* Ladder */
+.ladder-wrap{width:320px; margin:0 auto; background:#FBFBFC; border:1px solid #E5E7EB; border-radius:14px; padding:18px 14px 14px}
+.ladder-rails{display:flex; justify-content:space-between; height:120px; position:relative; padding:0 2px}
+.ladder-rails:before,.ladder-rails:after{content:''; position:absolute; top:0; bottom:0; width:4px; background:#111; border-radius:2px}
+.ladder-rails:before{left:0} .ladder-rails:after{right:0}
+.ladder-rung{position:absolute; left:4px; right:4px; top:50%; height:3px; background:#111; transform:translateY(-50%)}
+.ladder-contact{position:absolute; left:52px; top:50%; transform:translateY(-50%); display:flex; gap:0; transition:.2s}
+.ladder-contact.open{gap:12px}
+.ladder-contact span{display:block; width:3px; height:26px; background:#111; border-radius:1px; transition:.2s}
+.ladder-label{position:absolute; left:46px; top:calc(50% + 22px); font-size:10px; font-family:'JetBrains Mono'; font-weight:700; background:#111; color:#fff; padding:2px 6px; border-radius:4px}
+.ladder-coil{position:absolute; right:46px; top:50%; transform:translateY(-50%); width:34px; height:34px; border:3px solid #111; border-radius:50%; display:grid; place-items:center; background:#fff}
+.ladder-coil b{font-size:8px; letter-spacing:.06em}
+.rung-power{position:absolute; left:4px; right:4px; top:50%; height:3px; background:linear-gradient(90deg,#00C853,#2A7FFF); transform:translateY(-50%); transition:clip-path .28s ease; clip-path:inset(0 0 0 0)}
+.rung-power.cut{clip-path:inset(0 65% 0 0)}
+.coil-glow{position:absolute; inset:-6px; border-radius:50%; background:radial-gradient(circle, rgba(0,200,83,.35) 0%, transparent 70%); opacity:0; transition:.25s}
+.coil-glow.on{opacity:1}
+.motor-final{display:flex; align-items:center; gap:12px; justify-content:center; margin-top:18px; padding:14px; background:#F6F8FA; border-radius:12px; border:1px solid #E5E7EB}
+.sentence{max-width:760px; margin:24px auto 0; text-align:center; font-size:14px; line-height:1.5; font-weight:600; background:#FFFDE7; border:1px solid #FFE082; padding:12px 16px; border-radius:12px}
+
+/* Summary */
+.summary-grid{display:grid; grid-template-columns:1fr auto 1fr; gap:0; background:#fff; border:1px solid var(--line); border-radius:20px; overflow:hidden; margin-top:28px}
+@media(max-width:700px){.summary-grid{grid-template-columns:1fr}}
+.sum-col{padding:22px 20px}
+.sum-col h4{font-size:11px; letter-spacing:.16em; text-transform:uppercase; opacity:.5; margin-bottom:14px}
+.sum-row{display:flex; justify-content:space-between; padding:10px 12px; border-radius:10px; font-family:'JetBrains Mono'; font-size:13px; margin-bottom:8px; background:#F7F8FA; border:1px solid #EDEFF1}
+.sum-row b{opacity:.6; font-weight:700}
+.takeaway{margin-top:20px; background:var(--black); color:#fff; border-radius:20px; padding:22px 22px; display:flex; gap:16px; align-items:flex-start}
+.takeaway i{width:36px; height:36px; background:#fff; color:#111; display:grid; place-items:center; border-radius:50%; font-style:normal; font-weight:800; flex-shrink:0}
+.takeaway p{font-size:15px; line-height:1.5; font-weight:600}
+.takeaway p b{color:var(--yellow)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>STOP SYSTEMS // IEC 60204-1</h1>
+  <span>NORMAL vs EMERGENCY — DOUBLE INVERSION</span>
+</div>
+
+<!-- SECTION 1 -->
+<section id="s1">
+  <div class="section-label"><div class="label-num">1</div><div class="label-text">Normal Stop vs Emergency Stop</div></div>
+  <h2>Two stops.<br>Two completely different philosophies.</h2>
+  <div class="compare-grid">
+    <!-- Normal -->
+    <div class="card" id="card-normal">
+      <div class="card-head"><strong>Normal Stop</strong><span class="pill grey">NC • MOMENTARY • TO PLC</span></div>
+      <div class="button-stage" id="stageNormal">
+        <div class="btn-normal" id="btnNormal" tabindex="0" aria-label="Normal Stop Button"></div>
+        <div style="position:absolute; bottom:18px; left:50%; transform:translateX(-50%); font-size:10px; letter-spacing:.14em; opacity:.5; font-weight:700; text-align:center">PRESS & HOLD</div>
+      </div>
+      <div class="card-footer">
+        <div class="mini-stat"><b>PLC INPUT I0.0</b><div class="val"><span class="dot on" id="plcDot1"></span><span id="plcState1" class="mono">TRUE</span></div></div>
+        <div class="mini-stat"><b>LOGIC PATH</b><div class="val"><div class="rung-mini" style="flex:1"><div class="pow" id="rung1"></div></div></div></div>
+        <div class="mini-stat"><b>MOTOR</b><div class="val"><div class="motor-vis spin" id="motor1"></div><span id="motorText1" class="mono" style="font-size:11px">RUN</span></div></div>
+      </div>
+    </div>
+
+    <!-- E-Stop -->
+    <div class="card" id="card-estop">
+      <div class="card-head"><strong>Emergency Stop</strong><span class="pill red">LATCHING • SAFETY RELAY • POWER CUT</span></div>
+      <div class="button-stage dark" id="stageEstop">
+        <div class="estop-wrapper" id="estopWrapper">
+          <div class="estop-base">
+            <div class="estop-stem"></div>
+            <div class="estop-head" id="estopHead"></div>
+          </div>
+        </div>
+        <div id="twistLabel" style="position:absolute; bottom:52px; left:50%; transform:translateX(-50%); background:#fff; color:#111; font-size:11px; font-weight:800; letter-spacing:.12em; padding:8px 14px; border-radius:999px; display:none; box-shadow:0 8px 24px rgba(0,0,0,.4)">↻ TWIST TO RELEASE</div>
+      </div>
+      <div class="card-footer">
+        <div class="mini-stat"><b>SAFETY RELAY</b><div class="val"><span class="dot on" id="relayDot"></span><span id="relayText" class="mono">CLOSED</span></div></div>
+        <div class="mini-stat"><b>PLC CONTROL</b><div class="val"><span class="dot on" id="plcDot2"></span><span id="plcControlText" class="mono">ACTIVE</span></div></div>
+        <div class="mini-stat"><b>MOTOR POWER</b><div class="val"><div class="motor-vis spin" id="motor2"></div><span id="motorText2" class="mono" style="font-size:11px">RUN</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 -->
+<section id="s2">
+  <div class="section-label"><div class="label-num">2</div><div class="label-text">IEC Color Standards — IEC 60204-1</div></div>
+  <h2>Color means function.</h2>
+  <div class="iecs">
+    <div style="display:flex; justify-content:space-between; align-items:end; flex-wrap:wrap; gap:12px">
+      <div style="font-size:13px; opacity:.6; letter-spacing:.04em">Hover each actuator. No paragraphs — just meaning.</div>
+      <div class="mono" style="font-size:10px; letter-spacing:.14em; opacity:.4">BLACK / WHITE / GREY = NORMAL • RED+YELLOW = EMERGENCY</div>
+    </div>
+    <div class="iec-grid">
+      <div class="iec-item"><div class="tooltip">NORMAL STOP</div><div class="big-btn" style="background:#0F0F10; color:#fff; border-color:#000">● BLACK</div><div class="meta"><span>Standard</span><span class="mono">NC • Stop</span></div></div>
+      <div class="iec-item"><div class="tooltip">NORMAL STOP</div><div class="big-btn" style="background:#FFFFFF; color:#111; border-color:#111">○ WHITE</div><div class="meta"><span>Alternative</span><span class="mono">NC • Stop</span></div></div>
+      <div class="iec-item"><div class="tooltip">NORMAL STOP</div><div class="big-btn" style="background:#8A8E93; color:#fff; border-color:#6B7178">● GREY</div><div class="meta"><span>Alternative</span><span class="mono">NC • Stop</span></div></div>
+      <div class="iec-item is-red"><div class="tooltip" style="background:var(--yellow)">EMERGENCY STOP</div><div class="big-btn"><div class="estop-base" style="width:112px; height:112px"><div class="estop-stem" style="width:48px"></div><div class="estop-head" style="width:84px; height:52px"></div></div></div><div class="meta"><span style="color:var(--yellow)">Emergency Only</span><span class="mono" style="color:var(--yellow)">Latching</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 -->
+<section id="s3">
+  <div class="section-label"><div class="label-num">3</div><div class="label-text">Button Behaviour — Momentary vs Latching</div></div>
+  <h2>One springs back.<br>The other locks down.</h2>
+  <div class="split">
+    <div class="split-col">
+      <h3><i></i> Momentary Push Button — Normal Stop</h3>
+      <div class="proto-stage" id="protoMomentary">
+        <div class="btn-normal" id="demoNormal" style="width:100px; height:100px"></div>
+      </div>
+      <div class="steps" id="stepsMom">
+        <div class="step-row active" data-s="0"><div class="step-num">1</div> Press <span class="arrow">↓</span> Button moves in</div>
+        <div class="step-row" data-s="1"><div class="step-num">2</div> Hold <span class="arrow">↓</span> Contact stays open</div>
+        <div class="step-row" data-s="2"><div class="step-num">3</div> Release <span class="arrow">↓</span> Button springs back automatically</div>
+      </div>
+    </div>
+    <div class="split-col">
+      <h3><i style="background:var(--red)"></i> Emergency Stop — Latching</h3>
+      <div class="proto-stage" id="protoEstop" style="background:#FFF8E1">
+        <div class="estop-wrapper" id="demoEstopWrap">
+          <div class="estop-base" style="width:144px; height:144px">
+            <div class="estop-stem" style="width:56px"></div>
+            <div class="estop-head" id="demoEstopHead" style="width:108px; height:64px"></div>
+          </div>
+        </div>
+        <button class="twist-btn" id="twistBtn">↻ TWIST TO RELEASE</button>
+      </div>
+      <div class="steps" id="stepsEstop">
+        <div class="step-row active" data-s="0"><div class="step-num">1</div> Press <span class="arrow">↓</span> Button locks down</div>
+        <div class="step-row" data-s="1"><div class="step-num">2</div> Release mouse <span class="arrow">↓</span> Button stays down</div>
+        <div class="step-row" data-s="2"><div class="step-num">3</div> Click "Twist" <span class="arrow">↓</span> Button pops back out</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 -->
+<section id="s4">
+  <div class="section-label"><div class="label-num">4</div><div class="label-text">The Double Inversion — Main Concept</div></div>
+  <h2>Why a Normally Closed button<br>uses a Normally Open contact in code.</h2>
+
+  <div class="double-wrap">
+    <div class="double-top">
+      <b class="mono">SYNCED SIMULATION // I0.0 = NC STOP BUTTON</b>
+      <button class="sync-btn" id="syncBtn"><span class="mono">●</span> PRESS STOP</button>
+    </div>
+    <div class="double-grid">
+      <!-- LEFT PHYSICAL -->
+      <div class="panel left">
+        <h4><span style="width:6px;height:6px;background:#7CFF9A;display:block;border-radius:50%"></span> Physical Wiring</h4>
+        <div class="rail">
+          <div class="voltage-tag" id="vTag">24V — TRUE</div>
+          <div class="wire flow" id="wire1"></div>
+          <div class="nc-block" id="ncBlock">
+            <div class="nc-label mono">NC Stop Button — Closed = Run</div>
+            <div class="nc-contacts"><div class="nc-terminal"></div><div class="nc-bridge" id="ncBridge"></div><div class="nc-terminal"></div></div>
+          </div>
+          <div class="wire flow" id="wire2"></div>
+          <div class="plc-box" id="plcBoxLeft">
+            <div class="io mono">PLC INPUT I0.0</div>
+            <div class="state" id="leftState">TRUE</div>
+          </div>
+          <div style="margin-top:14px; font-size:10px; opacity:.5; letter-spacing:.12em; text-align:center" class="mono" id="currentLabel">CURRENT FLOWS</div>
+        </div>
+      </div>
+      <!-- RIGHT LADDER -->
+      <div class="panel right">
+        <h4><span style="width:6px;height:6px;background:#2A7FFF;display:block;border-radius:50%"></span> Ladder Logic — XIC [ ]</h4>
+        <div class="ladder-wrap">
+          <div style="font-size:10px; letter-spacing:.12em; opacity:.5; font-weight:800; margin-bottom:10px" class="mono">-- [ I0.0 ] ---------------- ( MOTOR ) --</div>
+          <div class="ladder-rails">
+            <div class="ladder-rung"></div>
+            <div class="rung-power" id="rungPower"></div>
+            <div class="ladder-contact" id="xicContact"><span></span><span></span></div>
+            <div class="ladder-label mono" id="xicLabel">XIC I0.0</div>
+            <div class="ladder-coil" id="ladderCoil"><div class="coil-glow on" id="coilGlow"></div><b class="mono">M</b></div>
+          </div>
+          <div class="motor-final">
+            <div class="motor-vis spin" id="motorFinal"></div>
+            <div><div class="mono" style="font-size:11px; font-weight:800; letter-spacing:.08em" id="motorFinalText">MOTOR RUNNING</div><div class="mono" style="font-size:10px; opacity:.5" id="motorFinalSub">Rung energized — XIC closed</div></div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:14px">
+          <div class="mini-stat" style="flex:1"><b>XIC STATE</b><div class="val mono" id="xicState" style="font-size:12px">CLOSED (TRUE)</div></div>
+          <div class="mini-stat" style="flex:1"><b>INPUT</b><div class="val mono" id="rightInput">TRUE → 24V</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sentence">
+    The physical push button is Normally Closed, but the PLC program uses a Normally Open (XIC) instruction because the PLC receives <span style="background:#111;color:#fff;padding:2px 6px;border-radius:4px" class="mono">TRUE</span> during normal operation.
+  </div>
+
+  <div class="summary-grid">
+    <div class="sum-col">
+      <h4>Physical World</h4>
+      <div class="sum-row"><span>NC Stop Button</span><b>CLOSED</b></div>
+      <div class="sum-row"><span>Input = 24V</span><b>TRUE</b></div>
+      <div class="sum-row"><span>Input = 0V</span><b>FALSE</b></div>
+      <div class="sum-row"><span>Button Pressed</span><b style="color:var(--red)">Motor Stops</b></div>
+    </div>
+    <div style="width:1px;background:var(--line)"></div>
+    <div class="sum-col">
+      <h4>PLC Software</h4>
+      <div class="sum-row"><span>XIC [ ]</span><b>NORMALLY OPEN</b></div>
+      <div class="sum-row"><span>TRUE</span><b>Contact Closed</b></div>
+      <div class="sum-row"><span>FALSE</span><b>Contact Open</b></div>
+      <div class="sum-row"><span>Motor Coil</span><b style="color:var(--green)">Energized / De-energized</b></div>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <i>!</i>
+    <p><b>Takeaway:</b> Although the physical STOP button is Normally Closed, the PLC program uses a Normally Open (XIC) instruction because the PLC sees TRUE when the machine is operating normally. This fail-safe ensures a wire break = FALSE = stop.</p>
+  </div>
+</section>
+
+<div style="height:80px"></div>
+
+<script>
+// --- Section 1 Normal ---
+const btnNormal = document.getElementById('btnNormal');
+const plcDot1 = document.getElementById('plcDot1');
+const plcState1 = document.getElementById('plcState1');
+const rung1 = document.getElementById('rung1');
+const motor1 = document.getElementById('motor1');
+const motorText1 = document.getElementById('motorText1');
+let normalPressed = false;
+function setNormal(p){
+  normalPressed = p;
+  if(p){
+    btnNormal.classList.add('pressed');
+    plcDot1.className='dot off'; plcState1.textContent='FALSE';
+    rung1.classList.add('off');
+    motor1.className='motor-vis stopped'; motorText1.textContent='STOP';
+  } else {
+    btnNormal.classList.remove('pressed');
+    plcDot1.className='dot on'; plcState1.textContent='TRUE';
+    rung1.classList.remove('off');
+    motor1.className='motor-vis spin'; motorText1.textContent='RUN';
+  }
+}
+btnNormal.addEventListener('mousedown',()=>setNormal(true));
+btnNormal.addEventListener('mouseup',()=>setNormal(false));
+btnNormal.addEventListener('mouseleave',()=>setNormal(false));
+btnNormal.addEventListener('touchstart',(e)=>{e.preventDefault(); setNormal(true);},{passive:false});
+btnNormal.addEventListener('touchend',(e)=>{e.preventDefault(); setNormal(false);});
+
+// --- Section 1 E-Stop ---
+const estopWrapper = document.getElementById('estopWrapper');
+const twistLabel = document.getElementById('twistLabel');
+const relayDot = document.getElementById('relayDot');
+const relayText = document.getElementById('relayText');
+const plcDot2 = document.getElementById('plcDot2');
+const plcControlText = document.getElementById('plcControlText');
+const motor2 = document.getElementById('motor2');
+const motorText2 = document.getElementById('motorText2');
+let estopLatched = false;
+function setEstop(latched){
+  estopLatched = latched;
+  if(latched){
+    estopWrapper.classList.add('latched');
+    twistLabel.style.display='block';
+    relayDot.className='dot cut'; relayText.textContent='CUT';
+    plcDot2.className='dot off'; plcControlText.textContent='LOST';
+    motor2.className='motor-vis stopped'; motorText2.textContent='CUT';
+  } else {
+    estopWrapper.classList.remove('latched');
+    twistLabel.style.display='none';
+    relayDot.className='dot on'; relayText.textContent='CLOSED';
+    plcDot2.className='dot on'; plcControlText.textContent='ACTIVE';
+    motor2.className='motor-vis spin'; motorText2.textContent='RUN';
+  }
+}
+estopWrapper.addEventListener('click',()=>{
+  if(!estopLatched) setEstop(true);
+  else { /* require twist label click */
+  }
+});
+twistLabel.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  twistLabel.animate([{transform:'translateX(-50%) rotate(0)'},{transform:'translateX(-50%) rotate(360deg)'}],{duration:400});
+  setTimeout(()=>setEstop(false),200);
+});
+
+// --- Section 3 Momentary behavior steps ---
+const demoNormal = document.getElementById('demoNormal');
+const stepsMom = document.getElementById('stepsMom').children;
+let momStep = 0;
+function updateMomSteps(s){
+  for(let i=0;i<stepsMom.length;i++){
+    stepsMom[i].classList.remove('active','done');
+    if(i<s) stepsMom[i].classList.add('done');
+    if(i===s) stepsMom[i].classList.add('active');
+  }
+}
+demoNormal.addEventListener('mousedown',()=>{
+  demoNormal.classList.add('pressed');
+  updateMomSteps(1);
+});
+function momEnd(){
+  demoNormal.classList.remove('pressed');
+  updateMomSteps(2);
+  setTimeout(()=>updateMomSteps(0),1200);
+}
+demoNormal.addEventListener('mouseup',momEnd);
+demoNormal.addEventListener('mouseleave',()=>{demoNormal.classList.remove('pressed'); updateMomSteps(0);});
+demoNormal.addEventListener('touchstart',(e)=>{e.preventDefault(); demoNormal.classList.add('pressed'); updateMomSteps(1);},{passive:false});
+demoNormal.addEventListener('touchend',(e)=>{e.preventDefault(); momEnd();},{passive:false});
+
+const demoEstopWrap = document.getElementById('demoEstopWrap');
+const demoEstopHead = document.getElementById('demoEstopHead');
+const twistBtn = document.getElementById('twistBtn');
+const stepsEstop = document.getElementById('stepsEstop').children;
+let demoLatched = false;
+function updateEstopSteps(s){
+  for(let i=0;i<stepsEstop.length;i++){
+    stepsEstop[i].classList.remove('active','done');
+    if(i<s) stepsEstop[i].classList.add('done');
+    if(i===s) stepsEstop[i].classList.add('active');
+  }
+}
+demoEstopWrap.addEventListener('click',()=>{
+  if(!demoLatched){
+    demoLatched=true;
+    demoEstopWrap.classList.add('latched');
+    demoEstopHead.style.transform='translateY(22px)';
+    twistBtn.classList.add('show');
+    updateEstopSteps(1);
+    setTimeout(()=>updateEstopSteps(1),10);
+  }
+});
+twistBtn.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  demoEstopHead.animate([{transform:'translateY(22px) rotate(0deg)'},{transform:'translateY(22px) rotate(90deg)'},{transform:'translateY(0) rotate(90deg)'}],{duration:500, easing:'cubic-bezier(.7,0,.3,1)'});
+  setTimeout(()=>{
+    demoEstopWrap.classList.remove('latched');
+    demoEstopHead.style.transform='translateY(0)';
+    twistBtn.classList.remove('show');
+    demoLatched=false;
+    updateEstopSteps(2);
+    setTimeout(()=>updateEstopSteps(0),1200);
+  },300);
+});
+
+// --- Section 4 Double Inversion ---
+const syncBtn = document.getElementById('syncBtn');
+const ncBlock = document.getElementById('ncBlock');
+const wire1 = document.getElementById('wire1');
+const wire2 = document.getElementById('wire2');
+const vTag = document.getElementById('vTag');
+const plcBoxLeft = document.getElementById('plcBoxLeft');
+const leftState = document.getElementById('leftState');
+const currentLabel = document.getElementById('currentLabel');
+const rungPower = document.getElementById('rungPower');
+const xicContact = document.getElementById('xicContact');
+const xicLabel = document.getElementById('xicLabel');
+const ladderCoil = document.getElementById('ladderCoil');
+const coilGlow = document.getElementById('coilGlow');
+const motorFinal = document.getElementById('motorFinal');
+const motorFinalText = document.getElementById('motorFinalText');
+const motorFinalSub = document.getElementById('motorFinalSub');
+const xicState = document.getElementById('xicState');
+const rightInput = document.getElementById('rightInput');
+
+let stopped = false;
+function setDoubleInversion(stop){
+  stopped = stop;
+  if(stop){
+    // Physical
+    ncBlock.classList.add('open');
+    wire1.classList.remove('flow'); wire1.classList.add('off');
+    wire2.classList.remove('flow'); wire2.classList.add('off');
+    vTag.textContent='0V — FALSE'; vTag.classList.add('false');
+    leftState.textContent='FALSE'; leftState.style.color='#FF7A7A';
+    currentLabel.textContent='CURRENT DISAPPEARS';
+    plcBoxLeft.style.background='#FFE8E8'; plcBoxLeft.style.borderColor='#FF7A7A';
+    // Ladder
+    rungPower.classList.add('cut');
+    xicContact.classList.add('open');
+    coilGlow.classList.remove('on');
+    motorFinal.className='motor-vis stopped';
+    motorFinalText.textContent='MOTOR STOPPED';
+    motorFinalSub.textContent='Rung loses power — XIC opened';
+    xicState.textContent='OPEN (FALSE)';
+    rightInput.textContent='FALSE → 0V';
+    syncBtn.classList.add('pushed');
+    syncBtn.innerHTML='<span class="mono">●</span> RELEASE TO RUN';
+  } else {
+    ncBlock.classList.remove('open');
+    wire1.classList.add('flow'); wire1.classList.remove('off');
+    wire2.classList.add('flow'); wire2.classList.remove('off');
+    vTag.textContent='24V — TRUE'; vTag.classList.remove('false');
+    leftState.textContent='TRUE'; leftState.style.color='#7CFF9A';
+    currentLabel.textContent='CURRENT FLOWS';
+    plcBoxLeft.style.background='#E8F0FF'; plcBoxLeft.style.borderColor='#2A7FFF';
+    rungPower.classList.remove('cut');
+    xicContact.classList.remove('open');
+    coilGlow.classList.add('on');
+    motorFinal.className='motor-vis spin';
+    motorFinalText.textContent='MOTOR RUNNING';
+    motorFinalSub.textContent='Rung energized — XIC closed';
+    xicState.textContent='CLOSED (TRUE)';
+    rightInput.textContent='TRUE → 24V';
+    syncBtn.classList.remove('pushed');
+    syncBtn.innerHTML='<span class="mono">●</span> PRESS STOP';
+  }
+}
+syncBtn.addEventListener('mousedown',()=>setDoubleInversion(true));
+syncBtn.addEventListener('mouseup',()=>setDoubleInversion(false));
+syncBtn.addEventListener('mouseleave',()=>setDoubleInversion(false));
+syncBtn.addEventListener('touchstart',(e)=>{e.preventDefault(); setDoubleInversion(true);},{passive:false});
+syncBtn.addEventListener('touchend',(e)=>{e.preventDefault(); setDoubleInversion(false);});
+syncBtn.addEventListener('click',()=>{
+  // toggle on click for mobile
+  if(window.innerWidth<900){
+    setDoubleInversion(!stopped);
+  }
+});
+</script>
+</body>
+</html>

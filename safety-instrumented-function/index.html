@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety Instrumented Function (SIF) — Visual Explainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7F9;
+  --card:#FFFFFF;
+  --ink:#101418;
+  --muted:#7A828E;
+  --line:#E3E7EB;
+  --green:#10B981;
+  --red:#EF4444;
+  --yellow:#FFD400;
+  --blue:#2563EB;
+  --dark:#101418;
+  --blue-light:#EFF6FF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.hero{padding:56px 0 32px;text-align:center}
+.badge{display:inline-flex;gap:8px;align-items:center;background:#101418;color:#fff;font-size:10px;letter-spacing:.2em;font-weight:800;padding:8px 14px;border-radius:999px;margin-bottom:18px}
+.badge i{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.hero h1{font-size:54px;line-height:.9;letter-spacing:-.04em;font-weight:800;max-width:720px;margin:0 auto}
+@media(max-width:700px){.hero h1{font-size:36px}}
+.hero .sub{margin:16px auto 0;max-width:680px;font-size:16px;color:#475569;line-height:1.5;font-weight:500}
+.hero .sub b{color:#101418}
+
+/* Flow shared */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:28px auto 0;max-width:420px}
+.flow-step{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 18px;width:100%;opacity:0;transform:translateY(12px) scale(.98);transition:.6s cubic-bezier(.2,.8,.2,1)}
+.flow-step.show{opacity:1;transform:none}
+.flow-step .f-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#F1F5F9;border:1px solid #E2E8F0;font-size:16px;flex-shrink:0}
+.flow-step b{font-size:13px;letter-spacing:-.01em}
+.flow-step small{display:block;font-size:10px;letter-spacing:.12em;opacity:.5;font-weight:700;text-transform:uppercase;margin-top:2px}
+.flow-arrow{height:28px;display:flex;align-items:center;justify-content:center;opacity:0;transition:.4s}
+.flow-arrow.show{opacity:.4}
+.flow-arrow span{width:2px;height:14px;background:#101418;display:block;position:relative}
+.flow-arrow span:after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #101418}
+
+/* Sections */
+section{padding:64px 0}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.num{width:28px;height:28px;background:#101418;color:#fff;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800}
+.label{font-size:11px;letter-spacing:.2em;font-weight:800;text-transform:uppercase;opacity:.6}
+h2{font-size:32px;letter-spacing:-.02em;line-height:1; font-weight:800;margin-bottom:10px}
+@media(max-width:700px){h2{font-size:26px}}
+.p-lead{color:var(--muted);font-size:14px;max-width:640px;line-height:1.5}
+
+/* Section 2 Conveyor */
+.s2-grid{display:grid;grid-template-columns:1.1fr .7fr;gap:18px;margin-top:26px}
+@media(max-width:900px){.s2-grid{grid-template-columns:1fr}}
+.machine-card{background:var(--card);border:1.5px solid var(--line);border-radius:24px;overflow:hidden}
+.machine-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:#FAFBFC}
+.machine-head b{font-size:11px;letter-spacing:.15em;text-transform:uppercase}
+.indicator{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.08em}
+.dot{width:10px;height:10px;border-radius:50%;background:#D0D5DB;box-shadow:0 0 0 3px rgba(0,0,0,.04);transition:.3s}
+.dot.on{background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.2),0 0 14px var(--green)}
+.dot.off{background:var(--red);box-shadow:0 0 0 4px rgba(239,68,68,.2),0 0 14px var(--red)}
+.stage-conveyor{height:320px;background:radial-gradient(600px 260px at 50% 0%, #F8FAFC 0%, #fff 60%);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;gap:18px;padding:18px}
+.conveyor{width:86%;max-width:420px;height:86px;background:#101418;border-radius:14px;position:relative;padding:10px;box-shadow:inset 0 2px 0 rgba(255,255,255,.15),0 12px 24px rgba(0,0,0,.2);border:2px solid #000}
+.belt{width:100%;height:34px;background:repeating-linear-gradient(90deg,#2A2E33 0 18px,#3A4048 18px 36px);border-radius:6px;position:relative;overflow:hidden;border:1px solid #000}
+.belt.moving{animation:beltMove .4s linear infinite}
+@keyframes beltMove{from{background-position:0 0} to{background-position:36px 0}}
+.box-on-belt{position:absolute;left:40%;top:50%;transform:translate(-50%,-50%);width:36px;height:26px;background:#fff;border:2px solid #101418;border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.box-on-belt.moving{animation:boxBob .6s ease-in-out infinite alternate}
+@keyframes boxBob{from{transform:translate(-50%,-50%)} to{transform:translate(-38%,-52%)}}
+.rollers{display:flex;justify-content:space-between;margin-top:10px;padding:0 6px}
+.roller{width:28px;height:28px;background:linear-gradient(180deg,#E5E7EB,#9CA3AF);border:2px solid #111;border-radius:50%;position:relative;box-shadow:inset 0 2px 0 #fff}
+.roller.spin:after{content:'';position:absolute;left:50%;top:50%;width:18px;height:3px;background:#111;transform:translate(-50%,-50%);animation:spin 0.5s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.motor-icon{position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:44px;height:44px;background:#fff;border:3px solid #111;border-radius:50%;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.motor-icon .fan{width:28px;height:28px;border:2px dashed #111;border-radius:50%;position:relative}
+.motor-icon .fan.spin{animation:spin 0.6s linear infinite;border-style:solid}
+.e-stop-area{display:flex;align-items:center;gap:14px;background:#FFF8E1;border:1.5px solid #FDE68A;border-radius:14px;padding:10px 14px}
+.estop-base{width:72px;height:72px;background:var(--yellow);border-radius:12px;border:2.5px solid #111;display:grid;place-items:center;box-shadow:0 6px 12px rgba(0,0,0,.15)}
+.estop-head{width:54px;height:32px;background:#EF4444;border-radius:18px 18px 12px 12px;border:2.5px solid #111;transition:transform .18s cubic-bezier(.7,0,.3,1)}
+.estop-base.pressed .estop-head{transform:translateY(10px)}
+.btn-red{background:var(--dark);color:#fff;border:none;padding:12px 18px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.12em;cursor:pointer;transition:.18s}
+.btn-red:active{transform:scale(.96)}
+.btn-red:disabled{opacity:.4;pointer-events:none}
+.seq-card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:18px}
+.seq-card h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin-bottom:14px}
+.seq-list{display:flex;flex-direction:column;gap:0}
+.seq-item{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid transparent;opacity:.35;transition:.3s}
+.seq-item.active{opacity:1;background:#F8FAFC;border-color:#E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.seq-item.done{opacity:.75}
+.seq-item .si{width:24px;height:24px;border-radius:50%;background:#E2E8F0;color:#64748B;display:grid;place-items:center;font-size:11px;font-weight:800;flex-shrink:0}
+.seq-item.active .si{background:#101418;color:#fff}
+.seq-item.done .si{background:var(--green);color:#fff}
+.seq-item b{font-size:13px}
+.seq-item .arr{margin-left:auto;opacity:.3}
+
+/* Section 3 Tank */
+.tank-grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:24px}
+@media(max-width:980px){.tank-grid{grid-template-columns:1fr}}
+.tank-card{background:var(--card);border:1.5px solid var(--line);border-radius:24px;overflow:hidden}
+.tank-stage{height:460px;position:relative;background:linear-gradient(180deg,#F8FAFC 0%, #FFFFFF 100%);display:flex;align-items:center;justify-content:center;padding:16px}
+.tank-wrap{position:relative;width:240px;height:340px}
+.tank-shell{position:absolute;inset:0;border:3px solid #101418;border-radius:18px 18px 8px 8px;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%, #F1F5F9 100%)}
+.water{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#60A5FA 0%, #2563EB 100%);transition:height .5s cubic-bezier(.3,.7,.4,1);border-top:3px solid #3B82F6}
+.water:after{content:'';position:absolute;left:0;right:0;top:0;height:8px;background:rgba(255,255,255,.5);filter:blur(2px)}
+.marks{position:absolute;left:-38px;top:0;bottom:0;width:34px;display:flex;flex-direction:column;justify-content:space-between;padding:10px 0;font-size:9px;font-weight:800;letter-spacing:.08em;font-family:'JetBrains Mono';opacity:.5}
+.tank-marks-line{position:absolute;left:0;right:0;height:2px;background:rgba(0,0,0,.15);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:9px;font-weight:800;font-family:'JetBrains Mono';color:#475569}
+.tank-marks-line.hh{top:18%;background:var(--red);color:var(--red)}
+.tank-marks-line.h{top:36%;background:#F59E0B;color:#92400E}
+.pipe{position:absolute;background:#101418;border-radius:4px}
+.pipe.in{left:50%;top:-14px;width:64px;height:10px;transform:translateX(-50%)}
+.pipe.out{left:50%;bottom:-12px;width:54px;height:10px;transform:translateX(-50%)}
+.valve{position:absolute;left:50%;transform:translateX(-50%);width:56px;height:28px;background:#fff;border:2.5px solid #101418;border-radius:8px;display:grid;place-items:center;z-index:2;transition:.3s;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.valve .state{width:28px;height:12px;border-radius:999px;background:var(--green);position:relative;transition:.3s}
+.valve .state:after{content:'';position:absolute;top:1px;left:1px;width:10px;height:10px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.valve.closed .state{background:#E2E8F0}
+.valve.closed .state:after{transform:translateX(16px)}
+.valve.open .state{background:var(--green)}
+.valve.open .state:after{transform:translateX(0)}
+.valve.v-fill{top:-34px}
+.valve.v-drain{bottom:-34px}
+.transmitter{position:absolute;right:-86px;top:22%;background:#fff;border:2px solid #101418;border-radius:12px;padding:8px 10px;width:76px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.1);transition:.3s}
+.transmitter.active{transform:scale(1.08);border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.15)}
+.transmitter b{font-size:8px;letter-spacing:.12em;display:block}
+.line-conn{position:absolute;right:-18px;top:50%;width:18px;height:2px;background:#101418}
+.plc-box{position:absolute;right:-92px;bottom:36%;background:#101418;color:#fff;border-radius:12px;padding:10px 12px;width:84px;text-align:center;transition:.3s}
+.plc-box.active{transform:scale(1.08);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.slider-wrap{padding:14px 18px;border-top:1px solid var(--line);background:#FAFBFC;display:flex;align-items:center;gap:14px}
+.slider-wrap input{flex:1;accent-color:var(--blue);height:6px}
+.slider-wrap .val{font-family:'JetBrains Mono';font-weight:800;font-size:13px;min-width:66px;text-align:right}
+.sif-overlay{position:absolute;inset:0;background:rgba(255,255,255,.78);backdrop-filter:blur(6px);display:none;place-items:center;z-index:10;border-radius:24px}
+.sif-overlay.show{display:grid}
+.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}100%{box-shadow:0 0 0 12px rgba(37,99,235,0)}}
+
+/* Section 4 */
+.three-grid{display:grid;grid-template-columns:1fr 60px 1fr 60px 1fr;align-items:start;gap:0;margin-top:26px}
+@media(max-width:900px){.three-grid{grid-template-columns:1fr;gap:12px}.arrow-col{display:none}}
+.arrow-col{display:flex;align-items:center;justify-content:center;padding-top:86px}
+.arrow-col span{width:2px;height:40px;background:#101418;position:relative;display:block}
+.arrow-col span:after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #101418}
+.sif-part{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px;cursor:pointer;transition:.25s;position:relative}
+.sif-part:hover{transform:translateY(-2px);border-color:#CBD5E1}
+.sif-part.active{border-color:#101418;box-shadow:0 14px 28px rgba(16,24,40,.12);transform:translateY(-2px)}
+.sif-part.active.sensor{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+.sif-part.active.logic{border-color:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.12)}
+.sif-part.active.final{border-color:#F59E0B;box-shadow:0 0 0 4px rgba(245,158,11,.18)}
+.part-icon{height:98px;background:#F8FAFC;border:1px dashed #DDE3E9;border-radius:14px;display:grid;place-items:center;margin-bottom:12px}
+.sif-part h4{font-size:12px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px}
+.sif-part p{font-size:12px;color:#64748B;line-height:1.5;font-weight:500}
+.detail-box{margin-top:18px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;min-height:66px}
+.detail-box i{width:34px;height:34px;border-radius:50%;background:#101418;color:#fff;display:grid;place-items:center;font-style:normal;font-weight:800;flex-shrink:0}
+.detail-box b{font-size:13px}
+.copy-card{margin-top:28px;background:#101418;color:#E5E7EB;border-radius:24px;padding:22px;display:grid;grid-template-columns:1fr auto;gap:18px}
+@media(max-width:800px){.copy-card{grid-template-columns:1fr}}
+.copy-card h4{font-size:10px;letter-spacing:.2em;opacity:.5;margin-bottom:10px}
+.copy-card p{font-size:15px;line-height:1.6;font-weight:500}
+.copy-card p b{color:#fff}
+.copy-btn{background:#fff;color:#101418;border:none;padding:12px 18px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.1em;cursor:pointer;transition:.2s;white-space:nowrap}
+.copy-btn.copied{background:var(--green);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- S1 -->
+  <section id="s1">
+    <div class="hero" style="padding-top:24px">
+      <div class="badge"><i></i> SAFETY INSTRUMENTED SYSTEMS</div>
+      <h1>Safety Instrumented Function (SIF)</h1>
+      <div class="sub"><b>A Safety Instrumented Function (SIF)</b> is an automatic safety action that detects a hazardous condition and immediately moves the process to a safe state to prevent an accident.</div>
+      <div class="flow" id="flow1">
+        <div class="flow-step"><div class="f-icon">⚠️</div><div><b>Hazard Detected</b><small>Level too high • Pressure high • Motion unsafe</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step"><div class="f-icon">🛡️</div><div><b>Safety System Acts</b><small>Automatic • No human intervention</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step"><div class="f-icon">✅</div><div><b>Process Moves to a Safe State</b><small>Motor OFF • Valve closed • Tank safe</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2 Conveyor -->
+  <section id="s2">
+    <div class="section-head"><div class="num">2</div><div class="label">Simple Conveyor Example</div></div>
+    <h2>A SIF stops danger — instantly.</h2>
+    <p class="p-lead">This introduces the idea that a SIF performs an automatic action when a dangerous condition occurs.</p>
+    <div class="s2-grid">
+      <div class="machine-card">
+        <div class="machine-head"><b>Conveyor • SIF-01</b><div class="indicator"><span class="dot on" id="runDot"></span><span id="runText">RUNNING • 24V</span></div></div>
+        <div class="stage-conveyor">
+          <div class="conveyor">
+            <div class="belt moving" id="belt"></div>
+            <div class="rollers"><div class="roller spin" id="r1"></div><div class="roller spin" id="r2"></div></div>
+            <div class="box-on-belt moving" id="box">📦</div>
+            <div class="motor-icon"><div class="fan spin" id="fan"></div></div>
+          </div>
+          <div class="e-stop-area">
+            <div class="estop-base" id="estopBase"><div class="estop-head" id="estopHead"></div></div>
+            <div><b class="mono" style="font-size:11px">EMERGENCY STOP</b><br><small class="mono" style="font-size:10px;opacity:.6">NC • Safety Relay</small></div>
+            <button class="btn-red" id="pressEStop">PRESS EMERGENCY STOP</button>
+            <button class="btn-red" id="resetConveyor" style="display:none;background:#fff;color:#101418;border:1.5px solid #101418">↻ RESET</button>
+          </div>
+        </div>
+      </div>
+      <div class="seq-card">
+        <h4>SEQUENCE — WHEN E-STOP IS PRESSED</h4>
+        <div class="seq-list" id="convSeq">
+          <div class="seq-item" data-s="0"><div class="si">1</div><b>Emergency Stop Pressed</b><span class="arr">↓</span></div>
+          <div class="seq-item" data-s="1"><div class="si">2</div><b>Safety Function Activated</b><span class="arr">↓</span></div>
+          <div class="seq-item" data-s="2"><div class="si">3</div><b>Motor Turned OFF</b><span class="arr">↓</span></div>
+          <div class="seq-item" data-s="3"><div class="si">4</div><b>Machine Reaches Safe State</b></div>
+        </div>
+        <div style="margin-top:14px;background:#F1F5F9;border-radius:12px;padding:10px 12px;font-size:11px;font-weight:600;color:#475569;line-height:1.5">
+          💡 This <b>automatic stop</b> is a SIF — not just an E-Stop button. The SIF is the whole function from detection to safe state.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 Tank -->
+  <section id="s3">
+    <div class="section-head"><div class="num">3</div><div class="label">Industrial Tank Example — Overfill Prevention SIF</div></div>
+    <h2>Level rises. Safety must act before overflow.</h2>
+    <p class="p-lead">Use the slider — when level reaches High-High, watch the SIF execute automatically step by step.</p>
+    <div class="tank-grid">
+      <div class="tank-card" style="position:relative">
+        <div class="sif-overlay" id="sifOverlay"><div style="background:#101418;color:#fff;font-size:11px;font-weight:800;letter-spacing:.14em;padding:12px 18px;border-radius:999px">⚡ SIF ACTIVE — EXECUTING SAFETY ACTION</div></div>
+        <div class="tank-stage">
+          <div class="tank-wrap" id="tankWrap">
+            <div class="marks"><span>100%</span><span>HH</span><span>H</span><span>50%</span><span>0%</span></div>
+            <div class="tank-shell" id="tankShell">
+              <div class="water" id="water" style="height:38%"></div>
+              <div class="tank-marks-line hh">HIGH-HIGH — TRIP <span style="margin-left:6px;width:8px;height:8px;background:var(--red);border-radius:50%;display:inline-block"></span></div>
+              <div class="tank-marks-line h">HIGH — ALARM</div>
+              <div class="pipe in"></div>
+              <div class="valve v-fill open" id="fillValve"><div class="state"></div></div>
+              <div class="pipe out"></div>
+              <div class="valve v-drain closed" id="drainValve"><div class="state"></div></div>
+            </div>
+            <div class="transmitter" id="lt"><div class="line-conn"></div><b>LT-101</b><small style="font-size:9px" class="mono">LEVEL TX</small><div class="mono" style="font-size:10px;font-weight:800;margin-top:4px" id="ltVal">38%</div></div>
+            <div class="plc-box" id="safetyPLC"><b style="font-size:8px;letter-spacing:.12em">SAFETY PLC</b><div style="font-size:18px">⚙️</div><small class="mono" style="font-size:8px">SIF LOGIC</small></div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <span class="mono" style="font-size:10px;font-weight:800;letter-spacing:.1em;opacity:.6">LEVEL</span>
+          <input type="range" id="levelSlider" min="0" max="100" value="38">
+          <span class="val" id="levelVal">38%</span>
+          <button class="btn-red" id="resetTank" style="padding:8px 12px;font-size:10px">RESET</button>
+        </div>
+      </div>
+      <div class="seq-card">
+        <h4>TANK SIF SEQUENCE</h4>
+        <div class="seq-list" id="tankSeq">
+          <div class="seq-item" data-t="0"><div class="si">1</div><b>Tank Level Reaches High-High</b></div>
+          <div class="seq-item" data-t="1"><div class="si">2</div><b>Level Transmitter Detects Hazard</b></div>
+          <div class="seq-item" data-t="2"><div class="si">3</div><b>Safety PLC Executes Safety Function</b></div>
+          <div class="seq-item" data-t="3"><div class="si">4</div><b>Fill Valve Closes</b></div>
+          <div class="seq-item" data-t="4"><div class="si">5</div><b>Drain Valve Opens</b></div>
+          <div class="seq-item" data-t="5"><div class="si">6</div><b>Tank Returns to Safe Level</b></div>
+          <div class="seq-item" data-t="6"><div class="si">✓</div><b>Overflow Prevented</b></div>
+        </div>
+        <div id="tankHint" style="margin-top:12px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;font-size:11px;line-height:1.5;font-weight:600;color:#1E40AF">☝️ Drag slider to 85%+ to trigger the SIF. Valve animations happen automatically.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 -->
+  <section id="s4">
+    <div class="section-head"><div class="num">4</div><div class="label">The Three Parts of a SIF</div></div>
+    <h2>Every SIF has Sensor → Logic → Final Element.</h2>
+    <div class="three-grid" id="threeGrid">
+      <div class="sif-part sensor active" data-part="sensor">
+        <div class="part-icon">
+          <svg width="86" height="64" viewBox="0 0 86 64"><rect x="6" y="10" width="60" height="32" rx="8" fill="#fff" stroke="#2563EB" stroke-width="2"/><circle cx="18" cy="26" r="6" fill="#2563EB"/><rect x="30" y="20" width="28" height="4" rx="2" fill="#93C5FD"/><rect x="30" y="28" width="18" height="4" rx="2" fill="#BFDBFE"/><path d="M66 26 L76 26" stroke="#101418" stroke-width="2" stroke-dasharray="4 3"/></svg>
+        </div>
+        <h4>① Sensor</h4><p>Detects the hazardous condition and sends a signal.</p>
+        <div class="mono" style="font-size:10px;margin-top:8px;opacity:.6;font-weight:800">LT • PT • FT • PROX • E-STOP</div>
+      </div>
+      <div class="arrow-col"><span></span></div>
+      <div class="sif-part logic" data-part="logic">
+        <div class="part-icon">
+          <svg width="86" height="64" viewBox="0 0 86 64"><rect x="8" y="8" width="56" height="40" rx="10" fill="#101418"/><rect x="16" y="16" width="12" height="12" rx="3" fill="#10B981"/><rect x="32" y="16" width="12" height="12" rx="3" fill="#334155"/><rect x="16" y="32" width="12" height="12" rx="3" fill="#334155"/><rect x="32" y="32" width="12" height="12" rx="3" fill="#10B981"/><circle cx="60" cy="28" r="3" fill="#10B981" class="pulse"/></svg>
+        </div>
+        <h4>② Logic Solver</h4><p>Evaluates the safety signal and decides what action must be taken.</p>
+        <div class="mono" style="font-size:10px;margin-top:8px;opacity:.6;font-weight:800">SAFETY PLC • SAFETY RELAY</div>
+      </div>
+      <div class="arrow-col"><span></span></div>
+      <div class="sif-part final" data-part="final">
+        <div class="part-icon">
+          <svg width="86" height="64" viewBox="0 0 86 64"><path d="M14 32 L58 32" stroke="#101418" stroke-width="4" stroke-linecap="round"/><rect x="42" y="18" width="24" height="28" rx="8" fill="#fff" stroke="#101418" stroke-width="2"/><rect x="46" y="22" width="16" height="20" rx="4" fill="#F59E0B"/></svg>
+        </div>
+        <h4>③ Final Element</h4><p>Performs the physical action that moves the process into a safe state.</p>
+        <div class="mono" style="font-size:10px;margin-top:8px;opacity:.6;font-weight:800">VALVE • CONTACTOR • DAMPER</div>
+      </div>
+    </div>
+    <div class="detail-box" id="detailBox"><i id="detailIcon">①</i><div><b id="detailTitle">Sensor — Detects the hazardous condition.</b><small class="mono" style="display:block;font-size:11px;opacity:.6;margin-top:2px" id="detailSub">Example: Level transmitter sees 92% — that's High-High.</small></div></div>
+
+    <div style="margin-top:36px;text-align:center">
+      <h2>Key Takeaway Flow</h2>
+      <div class="flow" id="flowTakeaway">
+        <div class="flow-step"><div class="f-icon">⚠️</div><div><b>Hazard Occurs</b><small>Tank overfills • Conveyor unsafe</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step"><div class="f-icon">📡</div><div><b>Sensor Detects It</b><small>Transmitter • E-Stop • Switch</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step"><div class="f-icon">🧠</div><div><b>Safety PLC Makes Decision</b><small>Logic: If HH → Close Fill</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step"><div class="f-icon">🔧</div><div><b>Final Element Acts</b><small>Valve closes • Motor OFF • Drain opens</small></div></div>
+        <div class="flow-arrow"><span></span></div>
+        <div class="flow-step" style="border-color:var(--green);background:#F0FDF4"><div class="f-icon" style="background:#DCFCE7;border-color:#86EFAC">✓</div><div><b>Process Becomes Safe</b><small>Prevents accident automatically</small></div></div>
+      </div>
+    </div>
+
+    <div class="copy-card">
+      <div><h4>INTERVIEW ANSWER</h4><p id="answerText"><b>A Safety Instrumented Function (SIF)</b> is an automatic safety function that detects a hazardous condition and moves a process to a predefined safe state. It consists of three main parts: a <b>Sensor</b> that detects the hazard, a <b>Logic Solver</b> (typically a Safety PLC) that evaluates the condition, and a <b>Final Element</b> (such as a control valve or contactor) that performs the action needed to make the process safe.</p></div>
+      <button class="copy-btn" id="copyBtn">⧉ COPY ANSWER</button>
+    </div>
+  </section>
+
+  <div style="height:60px"></div>
+</div>
+
+<script>
+// S1 auto animate
+function animateFlow(id){
+  const wrap = document.getElementById(id);
+  if(!wrap) return;
+  const steps = wrap.querySelectorAll('.flow-step');
+  const arrows = wrap.querySelectorAll('.flow-arrow');
+  const io = new IntersectionObserver((en)=>{
+    if(en[0].isIntersecting){
+      steps.forEach((s,i)=>{ setTimeout(()=>{s.classList.add('show'); if(arrows[i]) arrows[i].classList.add('show')}, i*380) });
+      io.disconnect();
+    }
+  },{threshold:.25});
+  io.observe(wrap);
+}
+animateFlow('flow1');
+animateFlow('flowTakeaway');
+
+// S2 Conveyor Logic
+const belt = document.getElementById('belt');
+const r1 = document.getElementById('r1'), r2=document.getElementById('r2'), fan=document.getElementById('fan'), box=document.getElementById('box');
+const runDot=document.getElementById('runDot'), runText=document.getElementById('runText');
+const estopBase=document.getElementById('estopBase');
+const pressBtn=document.getElementById('pressEStop'), resetBtn=document.getElementById('resetConveyor');
+const convSeqItems = document.querySelectorAll('#convSeq .seq-item');
+
+function setSeqActive(idx){
+  convSeqItems.forEach((el,i)=>{
+    el.classList.remove('active','done');
+    if(i<idx) el.classList.add('done');
+    if(i===idx) el.classList.add('active');
+  });
+}
+function triggerConveyorStop(){
+  pressBtn.style.display='none'; resetBtn.style.display='block';
+  estopBase.classList.add('pressed');
+  belt.classList.remove('moving'); r1.classList.remove('spin'); r2.classList.remove('spin'); fan.classList.remove('spin'); box.classList.remove('moving');
+  runDot.className='dot off'; runText.textContent='SAFE STATE • STOPPED';
+  let s=0; setSeqActive(s);
+  const int=setInterval(()=>{ s++; if(s<convSeqItems.length){ setSeqActive(s);} else clearInterval(int); }, 550);
+}
+function resetConveyor(){
+  pressBtn.style.display='block'; resetBtn.style.display='none';
+  estopBase.classList.remove('pressed');
+  belt.classList.add('moving'); r1.classList.add('spin'); r2.classList.add('spin'); fan.classList.add('spin'); box.classList.add('moving');
+  runDot.className='dot on'; runText.textContent='RUNNING • 24V';
+  convSeqItems.forEach(el=>el.classList.remove('active','done'));
+}
+pressBtn.addEventListener('click', triggerConveyorStop);
+resetBtn.addEventListener('click', resetConveyor);
+
+// S3 Tank Logic
+const slider=document.getElementById('levelSlider');
+const levelVal=document.getElementById('levelVal');
+const water=document.getElementById('water');
+const ltVal=document.getElementById('ltVal');
+const fillValve=document.getElementById('fillValve');
+const drainValve=document.getElementById('drainValve');
+const lt=document.getElementById('lt');
+const plc=document.getElementById('safetyPLC');
+const sifOverlay=document.getElementById('sifOverlay');
+const tankSeqItems=document.querySelectorAll('#tankSeq .seq-item');
+const tankHint=document.getElementById('tankHint');
+let sifActive=false;
+let autoDrainInterval=null;
+
+function setTankSeq(idx){
+  tankSeqItems.forEach((el,i)=>{
+    el.classList.remove('active','done');
+    if(i<idx) el.classList.add('done');
+    if(i===idx) el.classList.add('active');
+  });
+}
+
+function updateTankFromSlider(v){
+  if(sifActive) return;
+  water.style.height = v + '%';
+  ltVal.textContent = v + '%';
+  levelVal.textContent = v + '%';
+  if(v>=85 && !sifActive){
+    startSIF();
+  } else if(v<85){
+    setTankSeq(-1);
+  }
+}
+
+function startSIF(){
+  sifActive=true;
+  sifOverlay.classList.add('show');
+  slider.disabled=true;
+  tankHint.textContent='⚡ SIF TRIPPED at High-High — executing safety sequence...';
+  tankHint.style.background='#FEF2F2'; tankHint.style.borderColor='#FECACA'; tankHint.style.color='#991B1B';
+  let step=0; setTankSeq(step);
+  const seq = () => {
+    step++;
+    if(step===1){ lt.classList.add('active'); }
+    if(step===2){ plc.classList.add('active'); lt.classList.remove('active'); }
+    if(step===3){ fillValve.classList.remove('open'); fillValve.classList.add('closed'); plc.classList.remove('active'); }
+    if(step===4){ drainValve.classList.remove('closed'); drainValve.classList.add('open'); }
+    if(step===5){
+      // start draining
+      setTankSeq(step);
+      clearInterval(autoDrainInterval);
+      autoDrainInterval=setInterval(()=>{
+        let cur=parseInt(water.style.height);
+        if(cur<=45){ cur=45; water.style.height=cur+'%'; ltVal.textContent=cur+'%'; levelVal.textContent=cur+'%';
+          clearInterval(autoDrainInterval);
+          setTankSeq(6);
+          tankHint.textContent='✅ Overflow prevented — tank returned to safe level. Reset to try again.';
+          tankHint.style.background='#F0FDF4'; tankHint.style.borderColor='#BBF7D0'; tankHint.style.color='#166534';
+          sifOverlay.classList.remove('show');
+          setTimeout(()=>{ sifActive=false; slider.disabled=false; }, 800);
+          return;
+        }
+        cur-=1; water.style.height=cur+'%'; ltVal.textContent=cur+'%'; levelVal.textContent=cur+'%'; slider.value=cur;
+      }, 60);
+      return;
+    }
+    if(step<6){
+      setTankSeq(step);
+      setTimeout(seq, 750);
+    }
+  };
+  setTimeout(seq, 700);
+}
+
+slider.addEventListener('input', (e)=> updateTankFromSlider(parseInt(e.target.value)));
+document.getElementById('resetTank').addEventListener('click', ()=>{
+  clearInterval(autoDrainInterval);
+  sifActive=false; slider.disabled=false; slider.value=38;
+  water.style.height='38%'; ltVal.textContent='38%'; levelVal.textContent='38%';
+  fillValve.className='valve v-fill open'; drainValve.className='valve v-drain closed';
+  lt.classList.remove('active'); plc.classList.remove('active');
+  sifOverlay.classList.remove('show');
+  setTankSeq(-1);
+  tankHint.textContent='☝️ Drag slider to 85%+ to trigger the SIF. Valve animations happen automatically.';
+  tankHint.style.background='#EFF6FF'; tankHint.style.borderColor='#BFDBFE'; tankHint.style.color='#1E40AF';
+});
+
+// S4 three parts interactive
+const parts = document.querySelectorAll('.sif-part');
+const detailIcon=document.getElementById('detailIcon');
+const detailTitle=document.getElementById('detailTitle');
+const detailSub=document.getElementById('detailSub');
+const details = {
+  sensor:{icon:'①', title:'Sensor — Detects the hazardous condition.', sub:'Example: Level transmitter sees 92% — that is High-High hazard.', cls:'sensor'},
+  logic:{icon:'②', title:'Logic Solver — Makes the safety decision.', sub:'Example: Safety PLC: IF Level >= HH THEN Close Fill & Open Drain.', cls:'logic'},
+  final:{icon:'③', title:'Final Element — Carries out the physical safety action.', sub:'Example: Fill valve closes, drain valve opens, motor contactor opens.', cls:'final'}
+};
+parts.forEach(p=>{
+  p.addEventListener('click', ()=>{
+    parts.forEach(x=>x.classList.remove('active','sensor','logic','final'));
+    const key=p.dataset.part;
+    p.classList.add('active', key);
+    detailIcon.textContent=details[key].icon;
+    detailTitle.textContent=details[key].title;
+    detailSub.textContent=details[key].sub;
+    if(key==='sensor'){detailIcon.style.background='#2563EB'}
+    if(key==='logic'){detailIcon.style.background='#10B981'}
+    if(key==='final'){detailIcon.style.background='#F59E0B'}
+  });
+});
+
+// Copy
+document.getElementById('copyBtn').addEventListener('click', async()=>{
+  const txt=document.getElementById('answerText').innerText;
+  try{ await navigator.clipboard.writeText(txt); const b=document.getElementById('copyBtn'); b.textContent='✓ COPIED'; b.classList.add('copied'); setTimeout(()=>{b.textContent='⧉ COPY ANSWER'; b.classList.remove('copied')},1600);}catch(e){ alert(txt); }
+});
+</script>
+</body>
+</html>
