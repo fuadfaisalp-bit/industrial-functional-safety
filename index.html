@@ -1,14 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Industrial Functional Safety</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Safety Learning Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:#F5F7F9;color:#101418;padding:40px 24px}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-size:42px;letter-spacing:-.03em} .sub{color:#6B7280;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:28px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border:1.5px solid #E5E7EB;border-radius:20px;padding:20px;transition:.2s;cursor:pointer;text-decoration:none;color:inherit;display:block}
+.card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(0,0,0,.08);border-color:#101418}
+.card b{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.card h3{font-size:20px;margin:8px 0 6px} .card p{font-size:13px;color:#6B7280;line-height:1.5}
+.tag{display:inline-flex;margin-top:12px;background:#101418;color:#fff;font-size:10px;font-weight:800;letter-spacing:.12em;padding:6px 10px;border-radius:999px}
+</style>
 </head>
-
 <body>
-
-<h1>Industrial Functional Safety</h1>
-
-<p>GitHub Pages is working.</p>
-
+<div class="wrap">
+<h1>Safety Learning Hub</h1>
+<p class="sub">You have 4 interactive explainers in your workspace. Nothing was lost — each prompt created a new file.</p>
+<div class="grid">
+<a class="card" href="index.html"><b>01 • Stop Systems</b><h3>Normal Stop vs Emergency Stop</h3><p>NC vs NO, momentary vs latching, double inversion (physical NC + PLC XIC) with live ladder logic.</p><span class="tag">OPEN — index.html</span></a>
+<a class="card" href="sil.html"><b>02 • Reliability Rating</b><h3>Safety Integrity Level (SIL)</h3><p>Seatbelt analogy — SIL 1/2/3, reliability meter, flow: Higher SIL → Greater Protection.</p><span class="tag">OPEN — sil.html</span></a>
+<a class="card" href="sif.html"><b>03 • Automatic Safety Action</b><h3>Safety Instrumented Function (SIF)</h3><p>Conveyor E-Stop + Tank High-High overfill prevention. Sensor → Logic → Final Element.</p><span class="tag">OPEN — sif.html</span></a>
+<a class="card" href="plc-comparison.html"><b>04 • Controllers</b><h3>Standard PLC vs Safety PLC</h3><p>Same look, different responsibility. Normal Stop vs E-Stop paths, internal fault tolerance demo.</p><span class="tag">OPEN — plc-comparison.html</span></a>
+</div>
+<p style="margin-top:24px;font-size:13px;color:#9CA3AF">Tip: All files are in /home/user/. You can download or share any one directly.</p>
+</div>
 </body>
 </html>
