@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Industrial Functional Safety — Interactive Documentation</title>
-<meta name="description" content="Premium interactive documentation for Industrial Functional Safety — Normal vs Emergency Stop, SIL, SIF, Safety PLC. Built for engineers, interview-focused.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6e1.svg">
+<meta name="description" content="An interactive engineering knowledge library designed to simplify Industrial Functional Safety concepts through visual explanations, practical examples, and real-world automation scenarios. Built as part of my Industrial Automation learning journey.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -172,7 +173,7 @@ a{color:inherit;text-decoration:none}
       <a href="#path">Path</a>
       <a href="#about">About</a>
       <button class="tog" id="themeToggle" aria-label="Toggle theme">🌙</button>
-      <a class="btn btn-dark" href="https://github.com" target="_blank">↗ GitHub</a>
+      <a class="btn btn-dark" href="https://github.com/fuadfaisalp-bit/industrial-functional-safety" target="_blank">↗ Repository</a>
     </div>
   </div>
 </nav>
@@ -184,11 +185,11 @@ a{color:inherit;text-decoration:none}
     <div class="hero-grid">
       <div>
         <div class="kicker"><i></i> IEC 61508 • IEC 61511 • ISO 13849 • INTERVIEW FOCUSED</div>
-        <h1>Industrial <span>Functional Safety</span> — Learn by Interaction, Not Slides.</h1>
+        <h1>Industrial <span>Functional Safety</span> - Interactive Engineering Knowledge Library.</h1>
         <p class="sub">A premium documentation site for automation engineers. No boring PDFs. Just <b>live, animated explainers</b> for E-Stop, SIL, SIF, Safety PLCs — built like Siemens / Rockwell / Microsoft Learn docs.</p>
         <div class="hero-ctas">
           <button class="btn btn-glow" onclick="document.getElementById('library').scrollIntoView({behavior:'smooth'})">🚀 Explore Modules →</button>
-          <a class="btn" href="#coming">🔒 Roadmap 2025</a>
+          <a class="btn" href="#coming">🔒 FUTURE MODULES</a>
         </div>
         <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
           <span class="pill">⚙️ TIA Portal</span><span class="pill">🛡️ SIL 1-3</span><span class="pill">📡 PROFIsafe</span><span class="pill">⚡ Safety Relays</span>
@@ -264,7 +265,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- COMING SOON -->
   <section class="section" id="coming">
-    <div class="sec-head"><div><div class="label-row"><div class="num">2</div><div class="mono" style="font-size:11px;letter-spacing:.18em;font-weight:800;opacity:.6">ROADMAP 2025</div></div><h2>Coming Soon — lock your GitHub stars.</h2></div><p>These modules are queued. Disabled now to show scope — like a real docs site.</p></div>
+    <div class="sec-head"><div><div class="label-row"><div class="num">2</div><div class="mono" style="font-size:11px;letter-spacing:.18em;font-weight:800;opacity:.6">FUTURE MODULES</div></div><h2>Future Learning Modules.</h2></div><p>Additional interactive modules planned as the knowledge library continues to grow..</p></div>
     <div class="coming">
       <div class="soon reveal"><div class="lock">🔒</div><b>Lockout / Tagout</b><small>Energy isolation procedure</small></div>
       <div class="soon reveal"><div class="lock">⚡</div><b>Safety Relays</b><small>PNOZ / 3SK2 wiring</small></div>
@@ -279,7 +280,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- LEARNING PATH -->
   <section class="section" id="path">
-    <div class="sec-head"><div><div class="label-row"><div class="num">3</div><div class="mono" style="font-size:11px;letter-spacing:.18em;font-weight:800;opacity:.6">LEARNING PATH</div></div><h2>How I'd learn it if I started again.</h2></div><p>Follow this order — each module builds on previous.</p></div>
+    <div class="sec-head"><div><div class="label-row"><div class="num">3</div><div class="mono" style="font-size:11px;letter-spacing:.18em;font-weight:800;opacity:.6">LEARNING PATH</div></div><h2>Recommended Learning Path.</h2></div><p>A recommended progression from machine safety fundamentals to advanced functional safety concepts.</p></div>
     <div class="path reveal">
       <div class="path-step active"><div class="dot-t">1</div><div><h4>Basics — What is Safety?</h4><p>Hazard vs Risk, Normal Stop vs E-Stop distinction you just learned in Module 01</p></div></div>
       <div class="path-step active"><div class="dot-t">2</div><div><h4>Machine Safety</h4><p>Safety gates, light curtains, safety relays, two-hand control — how machines protect operators</p></div></div>
@@ -296,17 +297,17 @@ a{color:inherit;text-decoration:none}
     <div class="about">
       <div class="about-card reveal">
         <div class="avatar">IA</div>
-        <div><h3>Industrial Automation Engineer</h3><small class="mono">FUNCTIONAL SAFETY • PLC / SCADA • SIS</small><div class="about-links"><a class="btn" href="https://github.com" target="_blank">↗ GitHub Repo</a><button class="btn" onclick="navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copied!'))">⧉ Share Docs</button></div></div>
+        <div><h3>Fuad Faisal</h3><small class="mono">Automation & Control Systems Engineer</small><div class="about-links"><a class="btn" href="https://github.com" target="_blank">↗ GitHub Repo</a><button class="btn" onclick="navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copied!'))">⧉ Share Docs</button></div></div>
       </div>
       <div class="about-card reveal" style="flex-direction:column;align-items:start">
         <b class="mono" style="font-size:10px;letter-spacing:.14em;opacity:.6">WHY THIS EXISTS</b>
-        <p style="font-size:13px;line-height:1.6;color:var(--ink2);margin-top:8px">Most safety docs are 400-page PDFs. No interaction. No intuition. I built this as a <b>visual library</b> I wish I had for interviews and site work — each concept you can <i>press, break, and see it fail safe</i>.</p>
+        <p style="font-size:13px;line-height:1.6;color:var(--ink2);margin-top:8px">This knowledge library was created as part of my Industrial Automation learning journey. My goal is to simplify complex Industrial Functional Safety concepts through interactive visual modules that are easier to understand, remember, and revisit during interview preparation.</i>.</p>
         <div class="pills" style="margin-top:12px"><span class="pill">IEC 61508</span><span class="pill">IEC 61511</span><span class="pill">ISO 13849</span></div>
       </div>
     </div>
   </section>
 
-  <div class="footer"><span class="mono">INDUSTRIAL FUNCTIONAL SAFETY • DOCS V2.0 • BUILT WITH VANILLA HTML/CSS/JS • NO FRAMEWORKS</span><span class="mono">© 2026 • INTERVIEW FOCUSED • GITHUB PAGES READY</span></div>
+  <div class="footer"><span class="mono">INDUSTRIAL FUNCTIONAL SAFETY • DOCS V2.0 • BUILD WITH HTML5 • CSS3 • JavaScript • HOSTED ON GitHub Pages</span><span class="mono">Built by Fuad Faisal • Powered by GitHub Pages</span></div>
 </div>
 
 <script>
