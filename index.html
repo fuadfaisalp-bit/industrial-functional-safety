@@ -148,14 +148,16 @@ a{color:inherit;text-decoration:none}
 /* Featured Safety Card */
 
 .mod.safety{
-    border-color:#FFE082;
-    background:linear-gradient(180deg,#FFFEF8 0%, var(--card) 60%);
+    border-color:#FFD54F;
 }
 
 [data-theme="dark"] .mod.safety{
-    background:linear-gradient(180deg,#1E1C0A 0%, var(--card) 65%);
     border-color:#FFD54F;
 }
+
+/* ===========================
+   TOP ROW
+=========================== */
 
 .mod-top{
     display:flex;
@@ -176,12 +178,6 @@ a{color:inherit;text-decoration:none}
     border-radius:999px;
     border:1px solid var(--line);
     background:var(--bg3);
-    color:var(--ink);      /* <-- FIX */
-}
-
-/* Fix for dark mode */
-
-[data-theme="dark"] .badge{
     color:var(--ink);
 }
 
@@ -405,7 +401,7 @@ a{color:inherit;text-decoration:none}
       <!-- 2 -->
       <div class="mod safety reveal">
         <div class="glow"></div>
-        <div class="mod-top"><span class="badge" style="background:#FFF8E1;border-color:#FDE68A">FUNCTIONAL SAFETY • BEGINNER</span><div class="mod-icon">🛡️</div></div>
+        <div class="mod-top"><span class="badge">FUNCTIONAL SAFETY • BEGINNER</span><div class="mod-icon">🛡️</div></div>
         <h3>Safety Integrity Level (SIL)</h3>
         <p>SIL is not a ranking — it's reliability rating. Seatbelt analogy: SIL1 standard, SIL2 reinforced, SIL3 racing harness. Meter + flow.</p>
         <div class="mod-meta"><span class="meta">⏱ 5 min</span><span class="meta">📊 PFD • Risk Graph</span><span class="meta">🧠 Interview Favorite</span></div>
@@ -423,7 +419,7 @@ a{color:inherit;text-decoration:none}
       <!-- 4 -->
       <div class="mod reveal">
         <div class="glow"></div>
-        <div class="mod-top"><span class="badge" style="background:#EFF6FF;border-color:#BFDBFE">PLC ARCHITECTURE • INTERMEDIATE</span><div class="mod-icon">🧠</div></div>
+        <div class="mod-top"><span class="badge">PLC ARCHITECTURE • INTERMEDIATE</span><div class="mod-icon">🧠</div></div>
         <h3>Standard PLC vs Safety PLC</h3>
         <p>Both can stop a motor, but responsibilities differ. Internal fault simulation, dual-channel, diagnostics, fail-safe design. Controls vs Protects.</p>
         <div class="mod-meta"><span class="meta">⏱ 7 min</span><span class="meta">⚡ Fault Injection</span><span class="meta">📘 IEC 61508</span></div>
