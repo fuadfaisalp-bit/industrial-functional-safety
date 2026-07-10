@@ -38,12 +38,12 @@ This repository aims to explain:
 
 Click any topic below to open the interactive webpage.
 
-| Topic | Description | Open |
-|-------|-------------|------|
-| 🚨 Normal Stop vs Emergency Stop | Understand the operating philosophy and safety differences between normal machine stopping and emergency stopping. | 🔗 [Open](LINK_HERE) |
-| 🛡️ Safety Integrity Level (SIL) | Learn how SIL is used to measure the reliability of safety functions in industrial systems. | 🔗 [Open](LINK_HERE) |
-| ⚙️ Safety Instrumented Function (SIF) | Explore how sensors, logic solvers, and final control elements work together to protect industrial processes. | 🔗 [Open](LINK_HERE) |
-| 🧠 Standard PLC vs Safety PLC | Compare the purpose, design philosophy, and applications of standard PLCs and certified Safety PLCs. | 🔗 [Open](LINK_HERE) |
+| Topic | Description | Interactive Module |
+|:------|:------------|:------------------:|
+| 🚨 Normal Stop vs Emergency Stop | Learn the operational differences between a controlled stop and an emergency stop. | [![Open Module](https://img.shields.io/badge/Open-Interactive_Module-0A66C2?style=for-the-badge)](https://fuadfaisalp-bit.github.io/industrial-functional-safety/normal-stop-vs-emergency-stop/) |
+| 🛡️ Safety Integrity Level (SIL) | Understand how the reliability of safety functions is measured. | [![Open Module](https://img.shields.io/badge/Open-Interactive_Module-0A66C2?style=for-the-badge)](https://fuadfaisalp-bit.github.io/industrial-functional-safety/safety-integrity-level/) |
+| ⚙️ Safety Instrumented Function (SIF) | Learn how sensors, logic solvers and final control elements work together to protect industrial processes. | [![Open Module](https://img.shields.io/badge/Open-Interactive_Module-0A66C2?style=for-the-badge)](https://fuadfaisalp-bit.github.io/industrial-functional-safety/safety-instrumented-function/) |
+| 🧠 Standard PLC vs Safety PLC | Compare standard PLCs with certified Safety PLCs and understand where each is used. | [![Open Module](https://img.shields.io/badge/Open-Interactive_Module-0A66C2?style=for-the-badge)](https://fuadfaisalp-bit.github.io/industrial-functional-safety/standard-plc-vs-safety-plc/) |
 
 ---
 
